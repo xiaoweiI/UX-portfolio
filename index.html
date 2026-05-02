@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xiaowei · UX Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-layer" id="bgLayer"></div>
+  <div class="bg-noise" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">Xiaowei</span>
+      <span class="brand-sep">·</span>
+      <span class="brand-sub">UX Portfolio</span>
+    </div>
+    <nav class="topnav">
+      <a href="#" class="nav-link is-active">Library</a>
+      <a href="#" class="nav-link">About</a>
+      <a href="#" class="nav-link">Contact</a>
+    </nav>
+  </header>
+
+  <main class="stage">
+    <!-- LEFT: Disc stack (active center, prev/next peeking from left edge) -->
+    <section class="turntable-section" aria-label="Works turntable">
+      <div class="turntable" id="turntable">
+        <div class="disc-stack" id="discStack">
+          <!-- 4 discs injected by JS -->
+        </div>
+
+        <div class="tonearm" aria-hidden="true">
+          <div class="tonearm-base"></div>
+          <div class="tonearm-arm"></div>
+          <div class="tonearm-head"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Now Playing detail -->
+    <section class="now-playing" aria-label="Now playing">
+      <div class="np-header">
+        <span class="np-eyebrow">Now Playing</span>
+        <span class="np-track-count" id="trackCount">01 / 04</span>
+      </div>
+
+      <h1 class="np-title" id="npTitle">—</h1>
+      <p class="np-subtitle" id="npSubtitle">—</p>
+
+      <p class="np-description" id="npDescription">—</p>
+
+      <ul class="np-tags" id="npTags"></ul>
+
+      <div class="np-progress">
+        <div class="np-progress-track">
+          <div class="np-progress-fill" id="progressFill"></div>
+        </div>
+        <div class="np-progress-times">
+          <span id="progressTime">00:00</span>
+          <span id="progressDuration">03:24</span>
+        </div>
+      </div>
+
+      <div class="np-controls">
+        <button class="ctrl ctrl-secondary" id="shuffleBtn" aria-label="Shuffle">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M16 3h5v5h-2V6.41l-4.29 4.3-1.42-1.42L17.59 5H16V3zm-9.71 6.29L4.41 7.41 3 8.83l1.88 1.88 1.41-1.42zM21 16v5h-5v-2h1.59l-3.88-3.88 1.42-1.41L18 17.59V16h3zM3 8.83l8.59 8.58L13 16l-8.59-8.59L3 8.83z"/></svg>
+        </button>
+        <button class="ctrl" id="prevBtn" aria-label="Previous">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z"/></svg>
+        </button>
+        <button class="ctrl ctrl-play" id="playBtn" aria-label="Play / Pause">
+          <svg class="icon-play" viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M8 5v14l11-7L8 5z"/></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/></svg>
+        </button>
+        <button class="ctrl" id="nextBtn" aria-label="Next">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M16 6h2v12h-2V6zm-1.5 6L6 6v12l8.5-6z"/></svg>
+        </button>
+        <button class="ctrl ctrl-secondary" id="caseBtn" aria-label="Open case study">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42L17.59 5H14V3zM5 5h6v2H5v12h12v-6h2v8H3V5h2z"/></svg>
+        </button>
+      </div>
+
+      <div class="np-queue">
+        <div class="np-queue-header">
+          <span>Up Next</span>
+          <span class="np-queue-count" id="queueCount">3 tracks</span>
+        </div>
+        <ul class="queue-list" id="queueList"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
