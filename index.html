@@ -10,8 +10,41 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="bg-layer" id="bgLayer"></div>
+  <div class="bg-layer" id="bgLayer" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+  </div>
   <div class="bg-noise" aria-hidden="true"></div>
+
+  <!-- Intro / welcome overlay — dismissed on first interaction -->
+  <section class="intro" id="intro" aria-label="Welcome">
+    <div class="intro-content">
+      <span class="intro-eyebrow">Welcome</span>
+      <h1 class="intro-title">
+        Hi, I'm <span class="intro-name">Xiaowei</span>.
+      </h1>
+      <p class="intro-tagline">
+        UX Designer crafting products with rhythm —<br />
+        interfaces paced like songs.
+      </p>
+      <p class="intro-pitch">
+        Open to full-time UX roles. I work across mobile and data-rich
+        interfaces, moving from research through high-fidelity in tight loops,
+        and care a lot about how a product feels — its tempo, its restraint,
+        the small moments that make it human. The tracks below are recent
+        projects — give them a spin.
+      </p>
+      <button class="intro-cta" id="introCta" type="button">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M8 5v14l11-7L8 5z"/>
+        </svg>
+        <span>Press play</span>
+      </button>
+      <p class="intro-hint">or press any key</p>
+    </div>
+  </section>
 
   <header class="topbar">
     <div class="brand">
@@ -21,13 +54,12 @@
       <span class="brand-sub">UX Portfolio</span>
     </div>
     <nav class="topnav">
-      <a href="#" class="nav-link is-active">Library</a>
-      <a href="#" class="nav-link">About</a>
-      <a href="#" class="nav-link">Contact</a>
+      <a href="#" class="nav-link is-active" data-view="library">Library</a>
+      <a href="#" class="nav-link" data-view="contact">Contact</a>
     </nav>
   </header>
 
-  <main class="stage">
+  <main class="stage" id="stage" data-view="library">
     <!-- LEFT: Disc stack (active center, prev/next peeking from left edge) -->
     <section class="turntable-section" aria-label="Works turntable">
       <div class="turntable" id="turntable">
@@ -56,6 +88,18 @@
       <p class="np-description" id="npDescription">—</p>
 
       <ul class="np-tags" id="npTags"></ul>
+
+      <!-- LYRICS — synced to playback time, line highlights as progress advances -->
+      <section class="np-lyrics" id="npLyrics" hidden>
+        <div class="np-section-header">
+          <span class="np-eyebrow">Lyrics</span>
+          <span class="lyrics-pill">
+            <span class="lyrics-pill-dot" aria-hidden="true"></span>
+            <span>Synchronized</span>
+          </span>
+        </div>
+        <ol class="lyrics-list" id="lyricsList"></ol>
+      </section>
 
       <div class="np-progress">
         <div class="np-progress-track">
@@ -94,7 +138,174 @@
         <ul class="queue-list" id="queueList"></ul>
       </div>
     </section>
+
+    <!-- RIGHT-RIGHT: Liner Notes — narrow case-study commentary column -->
+    <section class="np-posts" id="npPosts" hidden>
+      <div class="np-section-header">
+        <span class="np-eyebrow">Liner Notes</span>
+        <span class="np-section-meta" id="postsMeta">—</span>
+      </div>
+
+      <blockquote class="quote-echo" id="quoteEcho">
+        <span class="quote-mark" aria-hidden="true">”</span>
+        <p class="quote-line" id="quoteLine">—</p>
+        <p class="quote-question" id="quoteQuestion">—</p>
+      </blockquote>
+
+      <article class="designer-note" id="designerNote" hidden>
+        <span class="designer-note-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 2l1.8 5.5L19 9l-5.2 1.5L12 16l-1.8-5.5L5 9l5.2-1.5L12 2zm6 12l.9 2.6L21 17l-2.1.4L18 20l-.9-2.6L15 17l2.1-.4L18 14zM6 14l.9 2.6L9 17l-2.1.4L6 20l-.9-2.6L3 17l2.1-.4L6 14z"/></svg>
+        </span>
+        <div class="designer-note-content">
+          <span class="designer-note-label">Designer's Note</span>
+          <p class="designer-note-body" id="designerNoteBody">—</p>
+        </div>
+      </article>
+
+      <div class="posts-container" id="postsContainer"></div>
+
+      <section class="user-voices" id="userVoices" hidden>
+        <span class="np-eyebrow user-voices-label">User Voices</span>
+        <ul class="voices-list" id="voicesList"></ul>
+      </section>
+    </section>
+
+    <!-- RIGHT (alt): Profile / Contact — Apple Music profile style -->
+    <section class="profile" aria-label="Profile and contact">
+      <div class="np-header">
+        <span class="np-eyebrow">Profile</span>
+        <span class="np-track-count">Listener</span>
+      </div>
+
+      <div class="profile-identity">
+        <div class="profile-avatar">
+          <span class="profile-avatar-initial">X</span>
+        </div>
+        <div class="profile-id-text">
+          <h1 class="profile-name">Xiaowei Guo</h1>
+          <p class="profile-handle">UX Designer · @guoxiaowei</p>
+        </div>
+      </div>
+
+      <div class="profile-status">
+        <span class="profile-status-dot"></span>
+        <span>Available for full-time UX roles</span>
+      </div>
+
+      <div class="profile-listening">
+        <span class="profile-section-label">Now Listening To</span>
+        <a class="profile-listening-row" data-view="library" href="#">
+          <div class="profile-listening-thumb" id="profileNowThumb"></div>
+          <div class="profile-listening-meta">
+            <span class="profile-listening-title" id="profileNowTitle">—</span>
+            <span class="profile-listening-sub" id="profileNowSub">—</span>
+          </div>
+          <span class="profile-listening-eq" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </a>
+      </div>
+
+      <p class="profile-bio">
+        I design products with rhythm — interfaces paced like songs. Currently
+        focused on mobile, data-rich dashboards, and AI-assisted tools. I move
+        from research through high-fidelity in tight loops, and I care a lot
+        about how a product feels — its tempo, its restraint, the small moments
+        that make it human.
+      </p>
+
+      <div class="profile-block">
+        <span class="profile-section-label">On Rotation</span>
+        <ul class="profile-tags">
+          <li>Mobile</li>
+          <li>Dashboards</li>
+          <li>AI</li>
+          <li>Design Systems</li>
+          <li>Motion</li>
+          <li>Research</li>
+        </ul>
+      </div>
+
+      <div class="profile-block profile-block-contact">
+        <span class="profile-section-label">Get in Touch</span>
+        <ul class="contact-list">
+          <li>
+            <a class="contact-item" href="mailto:guoxiaowei723@gmail.com">
+              <span class="contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm0 2v.4l8 5 8-5V8H4zm0 2.6V16h16v-5.4l-8 5-8-5z"/></svg>
+              </span>
+              <div class="contact-meta">
+                <span class="contact-label">Email</span>
+                <span class="contact-value">guoxiaowei723@gmail.com</span>
+              </div>
+              <span class="contact-arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+          <li>
+            <a class="contact-item" href="#" target="_blank" rel="noopener">
+              <span class="contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.22 8h4.56v14H.22V8zm7.4 0h4.37v1.92h.06c.61-1.15 2.1-2.36 4.32-2.36 4.62 0 5.47 3.04 5.47 7v8.44h-4.56v-7.49c0-1.79-.03-4.1-2.5-4.1-2.5 0-2.88 1.95-2.88 3.97V22H7.62V8z"/></svg>
+              </span>
+              <div class="contact-meta">
+                <span class="contact-label">LinkedIn</span>
+                <span class="contact-value">Add your profile URL</span>
+              </div>
+              <span class="contact-arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+          <li>
+            <a class="contact-item" href="#" target="_blank" rel="noopener">
+              <span class="contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 .3a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.04c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.18 0 0 1.01-.32 3.31 1.23a11.5 11.5 0 0 1 6.02 0c2.3-1.55 3.31-1.23 3.31-1.23.65 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.83.58A12 12 0 0 0 12 .3"/></svg>
+              </span>
+              <div class="contact-meta">
+                <span class="contact-label">GitHub</span>
+                <span class="contact-value">Add your profile URL</span>
+              </div>
+              <span class="contact-arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+          <li>
+            <a class="contact-item" href="#" target="_blank" rel="noopener">
+              <span class="contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm0 7V3.5L19.5 9H14zM8 13h8v2H8v-2zm0 4h8v2H8v-2zm0-8h4v2H8V9z"/></svg>
+              </span>
+              <div class="contact-meta">
+                <span class="contact-label">Resume / CV</span>
+                <span class="contact-value">Drop a PDF in the repo</span>
+              </div>
+              <span class="contact-arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
   </main>
+
+  <!-- Post detail modal — opens when a Liner Notes card is clicked -->
+  <div class="post-modal" id="postModal" hidden>
+    <div class="post-modal-backdrop" id="postModalBackdrop"></div>
+    <article class="post-modal-card" role="dialog" aria-modal="true" aria-labelledby="postModalTitle">
+      <button class="post-modal-close" id="postModalClose" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M18.3 5.7L17 4.3 12 9.3 7 4.3 5.7 5.7 10.7 12l-5 5L7 18.3 12 13.3l5 5 1.3-1.3-5-5z"/></svg>
+      </button>
+      <div class="post-modal-body" id="postModalBody"></div>
+      <div class="post-modal-footer">
+        <button class="post-like is-large" id="postModalLike" type="button" aria-pressed="false">
+          <svg class="post-like-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M12 21l-1.5-1.4C5 14.4 2 11.7 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2 1.1-1.2 2.8-2 4.5-2C19.6 3 22 5.4 22 8.5c0 3.2-3 5.9-8.5 11.1L12 21z" stroke="currentColor" stroke-width="1.6" fill="none"/>
+          </svg>
+          <span><span id="postModalLikeCount">0</span> Likes</span>
+        </button>
+        <span class="post-views is-large">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path fill="currentColor" d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+          </svg>
+          <span><span id="postModalViewCount">0</span> Views</span>
+        </span>
+      </div>
+    </article>
+  </div>
 
   <script src="script.js"></script>
 </body>

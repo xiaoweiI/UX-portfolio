@@ -3,6 +3,8 @@
    Turntable interaction
    ========================================================================== */
 
+const ARTIST = "Xiaowei";
+
 const works = [
   {
     title: "Carbcycle",
@@ -14,9 +16,102 @@ const works = [
     glyph: "C",
     coverTag: "Track 01",
     cover: "Carbcycle/carb1.jpg",
-    accent1: "#ff8a3d",
-    accent2: "#ffb347",
-    accent3: "#ffd166",
+    // Dark theme — warm-orange-on-near-black, like the Waveplay reference.
+    theme: "dark",
+    accent1: "#ff6e1f",
+    accent2: "#ff9747",
+    accent3: "#4dd4d4",
+    lyrics: [
+      {
+        line: "Carb cycling without the spreadsheet.",
+        question: "Why we made mode-switching the spine of the app.",
+        note: "Existing carb-cycle apps treated the day-mode as a setting buried three screens deep. We made it the first decision of the day — visible from the home screen, one tap to commit. That hierarchy reflects how cyclers actually think about their day, not how database schemas want to be organized.",
+        posts: [
+          {
+            type: "text",
+            title: "The hook",
+            body: "Carb cyclers were patching their plans together with paper journals and generic macro apps that knew nothing about the daily H/M/L switch. The whole product was built around that switch as the primary interaction — not a setting buried three screens deep.",
+          },
+          {
+            type: "image",
+            src: "Carbcycle/carb1.jpg",
+            caption: "Today screen — three macro rings as the daily anchor.",
+          },
+        ],
+        voices: [
+          {
+            quote: "I had three different spreadsheet tabs before this — one per mode. Now it's just a tap.",
+            author: "P03 — Beta tester",
+            tag: "Onboarding",
+          },
+        ],
+      },
+      {
+        line: "One tap, three numbers, instant recalc.",
+        question: "How fast is too fast for a recalculation?",
+        note: "320ms felt like a physical 'flip' — readable, satisfying, not laggy. At 200ms users couldn't follow what changed; at 500ms+ it felt sluggish. The animation isn't decorative — it's load-bearing trust signaling. Tested across 6 durations with 4 users.",
+        posts: [
+          {
+            type: "text",
+            body: "Switching the day's mode reshuffles five values in concert (kcal, P, C, F, fiber). The macro rings animate through the recalculation in 320ms — long enough to read, short enough to never annoy. I tested six durations with four users to land here.",
+          },
+          {
+            type: "image",
+            src: "Carbcycle/carb2.jpg",
+            caption: "Auto Meal Plan modal — pattern over a 7-day week, color-coded by mode.",
+          },
+        ],
+        voices: [
+          {
+            quote: "It actually animates. I can see what the app's doing. Other apps just blink.",
+            author: "P02 — Athlete",
+            tag: "Animation",
+          },
+        ],
+      },
+      {
+        line: "Seven days, generated, previewed, then committed.",
+        question: "Why preview before commit, instead of auto-applying.",
+        note: "Auto-applying a generated week would have saved one tap, but five-of-seven users in early testing hesitated to use the feature again after one bad auto-result. The Preview screen earned trust back. Slower flow, higher long-term engagement — not the same thing as friction.",
+        posts: [
+          {
+            type: "text",
+            title: "Trust before commitment",
+            body: "Auto-plan generates a 7-day pattern, then shows a full Preview before applying. Reduced the 'did I just lose my plan?' anxiety I saw repeatedly in early testing — users want to see the math before signing the contract.",
+          },
+          {
+            type: "image",
+            src: "Carbcycle/carb3.jpg",
+            caption: "Preview Plan — totals visible per day before Confirm & Apply.",
+          },
+        ],
+        voices: [
+          {
+            quote: "I want to see what it's giving me before it overwrites my plan.",
+            author: "P05 — Coach",
+            tag: "Trust",
+          },
+        ],
+      },
+      {
+        line: "Meals as building blocks, not prescriptions.",
+        question: "What do users do when the plan doesn't fit?",
+        note: "Strict plans break under any deviation — a missed meal, a craving, a dinner out. Users either abandon the plan entirely or feel guilty for breaking it. Treating meals as swappable units (drag to reorder, tap to substitute within macro bands) gave users permission to deviate without breaking the system. The plan is a scaffold, not a contract.",
+        posts: [
+          {
+            type: "text",
+            body: "Each meal is a swappable unit — drag to reorder, tap to substitute from the same macro band. The plan is a scaffold, not a contract. Users who fall off a strict plan rarely come back; users who improvise around a scaffold do.",
+          },
+        ],
+        voices: [
+          {
+            quote: "I switched two meals on Wednesday and didn't feel like I'd 'cheated'. The app didn't make me feel bad.",
+            author: "P04 — Long-term dieter",
+            tag: "Adherence",
+          },
+        ],
+      },
+    ],
   },
   {
     title: "Ecodemand",
@@ -28,9 +123,80 @@ const works = [
     glyph: "E",
     coverTag: "Track 02",
     cover: "Ecodemand/dashboard-1.png",
-    accent1: "#5b8def",
-    accent2: "#7ba9f5",
-    accent3: "#a3c4f8",
+    // Light theme — bright, airy, blue/purple primary with warm peach as the
+    // sparing "data accent" (matches the Waveflow-style light reference).
+    theme: "light",
+    accent1: "#4880ff",
+    accent2: "#7b61ff",
+    accent3: "#ff8c42",
+    lyrics: [
+      {
+        line: "Numbers should whisper, not shout.",
+        question: "What changes when an operator opens the dashboard?",
+        note: "The previous dashboard led with absolute numbers — Total Sales: $89,000. Operators care about the delta, not the absolute. We re-anchored every metric card around 'change since yesterday' as the primary value, with the absolute as supporting context.",
+        posts: [
+          {
+            type: "text",
+            title: "The brief",
+            body: "Operators were opening the previous dashboard daily and bouncing — too many numbers, no clear hierarchy of 'what changed since yesterday'. The redesign brief: rebuild the surface around delta and trend, not absolute values.",
+          },
+          {
+            type: "image",
+            src: "Ecodemand/dashboard-1.png",
+            caption: "Top metrics card — absolute number paired with delta-vs-yesterday as a colored note.",
+          },
+        ],
+        voices: [
+          {
+            quote: "I don't need the actual sales total — I need to know if today is going up or down compared to yesterday.",
+            author: "Ops Lead — Customer interview",
+            tag: "Information hierarchy",
+          },
+        ],
+      },
+      {
+        line: "Scan the sales line first, drill down second.",
+        question: "Why hide the axis on charts by default?",
+        note: "In testing, exact axis ticks rarely got read. Hiding them by default and revealing on hover let the eye land on shape (trend) instead of values. Time-to-insight on the sales question dropped from ~12s to ~5s. People don't scan numbers — they scan silhouettes.",
+        posts: [
+          {
+            type: "image",
+            src: "Ecodemand/dashboard-3.png",
+            caption: "Revenue view — soft area chart so the eye lands on shape, not exact ticks.",
+          },
+          {
+            type: "text",
+            body: "Charts default to silhouette mode (color, soft fill) and reveal axis ticks only on hover. In testing, time-to-insight on the sales question dropped from ~12s to ~5s.",
+          },
+        ],
+        voices: [
+          {
+            quote: "I look at the shape, then if I want a number I'll hover. Most of the time I just want the shape.",
+            author: "Sales analyst — Usability test",
+            tag: "Reading patterns",
+          },
+        ],
+      },
+      {
+        line: "Inventory and orders share one navigation grammar.",
+        question: "What did the design system learn from the redesign?",
+        note: "Each section had its own grid layout, filter pattern, and density before. We unified everything around a single row pattern with the same controls (search, sort, filter, export). New-operator onboarding dropped from 'a half day' to 'a few minutes' — pattern reuse compounds.",
+        posts: [
+          {
+            type: "image",
+            src: "Ecodemand/dashboard-4.png",
+            caption: "Product browse — same row pattern, controls, and density as orders/customers.",
+          },
+        ],
+        voices: [
+          {
+            quote: "Once I learned how the products page worked, I already knew the orders page.",
+            author: "New hire — Onboarding interview",
+            tag: "Pattern reuse",
+          },
+        ],
+      },
+    ],
   },
   // ↓ Placeholders — replace when you add a new project
   {
@@ -42,6 +208,7 @@ const works = [
     duration: "02:56",
     glyph: "P",
     coverTag: "Track 03",
+    theme: "dark",
     accent1: "#11998e",
     accent2: "#38ef7d",
     accent3: "#a8e063",
@@ -55,6 +222,7 @@ const works = [
     duration: "05:21",
     glyph: "R",
     coverTag: "Track 04",
+    theme: "light",
     accent1: "#c471f5",
     accent2: "#fa71cd",
     accent3: "#fbc2eb",
@@ -68,6 +236,8 @@ let currentIndex = 0;
 let isPlaying = false;
 let progressTimer = null;
 let progressSeconds = 0;
+let introDismissed = false;
+let activeLyricIndex = 0;
 
 // --------------------------------------------------------------------------
 // DOM
@@ -75,6 +245,30 @@ let progressSeconds = 0;
 const $ = (id) => document.getElementById(id);
 const discStack = $("discStack");
 const turntable = $("turntable");
+const intro = $("intro");
+const introCta = $("introCta");
+const stage = $("stage");
+const profileNowThumb = $("profileNowThumb");
+const profileNowTitle = $("profileNowTitle");
+const profileNowSub = $("profileNowSub");
+const npLyrics = $("npLyrics");
+const npPosts = $("npPosts");
+const lyricsList = $("lyricsList");
+const postsContainer = $("postsContainer");
+const postsMeta = $("postsMeta");
+const quoteLine = $("quoteLine");
+const quoteQuestion = $("quoteQuestion");
+const designerNote = $("designerNote");
+const designerNoteBody = $("designerNoteBody");
+const userVoices = $("userVoices");
+const voicesList = $("voicesList");
+const postModal = $("postModal");
+const postModalBackdrop = $("postModalBackdrop");
+const postModalClose = $("postModalClose");
+const postModalBody = $("postModalBody");
+const postModalLike = $("postModalLike");
+const postModalLikeCount = $("postModalLikeCount");
+const postModalViewCount = $("postModalViewCount");
 const npTitle = $("npTitle");
 const npSubtitle = $("npSubtitle");
 const npDescription = $("npDescription");
@@ -134,6 +328,382 @@ function applyDiscStates() {
   });
 }
 
+// --------------------------------------------------------------------------
+// Lyrics + Liner Notes (case-study content per work)
+// --------------------------------------------------------------------------
+function renderLyrics() {
+  const work = works[currentIndex];
+  const lyrics = work.lyrics || [];
+
+  // Hide both sections entirely when there are no lyrics
+  if (!lyrics.length) {
+    npLyrics.hidden = true;
+    npPosts.hidden = true;
+    return;
+  }
+  npLyrics.hidden = false;
+  npPosts.hidden = false;
+
+  lyricsList.innerHTML = lyrics
+    .map(
+      (l, i) => `
+      <li class="lyric ${i === activeLyricIndex ? "is-active" : ""}"
+          data-lyric-index="${i}">
+        <span class="lyric-marker">
+          <span class="lyric-num">${String(i + 1).padStart(2, "0")}</span>
+          <span class="lyric-dot" aria-hidden="true"></span>
+          <span class="lyric-eq" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </span>
+        <span class="lyric-text">${escapeHtml(l.line)}</span>
+      </li>`
+    )
+    .join("");
+
+  renderLinerNotes();
+}
+
+// Quote echo + Designer's Note + User Voices for the active lyric.
+// Posts grid is rendered by renderPosts() (called inside).
+function renderLinerNotes() {
+  const work = works[currentIndex];
+  const lyric = (work.lyrics || [])[activeLyricIndex];
+  if (!lyric) {
+    quoteLine.textContent = "—";
+    quoteQuestion.textContent = "—";
+    designerNote.hidden = true;
+    userVoices.hidden = true;
+    postsContainer.innerHTML = "";
+    return;
+  }
+
+  // Quote echo
+  quoteLine.textContent = lyric.line;
+  quoteQuestion.textContent =
+    lyric.question || "Why this line shaped the design.";
+
+  // Designer's Note
+  if (lyric.note) {
+    designerNote.hidden = false;
+    designerNoteBody.textContent = lyric.note;
+  } else {
+    designerNote.hidden = true;
+  }
+
+  // User Voices
+  if (lyric.voices && lyric.voices.length) {
+    userVoices.hidden = false;
+    voicesList.innerHTML = lyric.voices
+      .map(
+        (v) => `
+        <li class="voice">
+          <p class="voice-quote">${escapeHtml(v.quote || "")}</p>
+          <div class="voice-meta">
+            ${v.author ? `<span class="voice-author">${escapeHtml(v.author)}</span>` : ""}
+            ${v.tag ? `<span class="voice-tag">${escapeHtml(v.tag)}</span>` : ""}
+          </div>
+        </li>`
+      )
+      .join("");
+  } else {
+    userVoices.hidden = true;
+  }
+
+  // Posts grid (existing)
+  renderPosts();
+}
+
+function renderPosts() {
+  const work = works[currentIndex];
+  const lyric = (work.lyrics || [])[activeLyricIndex];
+  if (!lyric) {
+    postsContainer.innerHTML = "";
+    postsMeta.textContent = "";
+    return;
+  }
+
+  postsMeta.textContent =
+    `${String(activeLyricIndex + 1).padStart(2, "0")} / ${String(work.lyrics.length).padStart(2, "0")}`;
+
+  postsContainer.innerHTML = (lyric.posts || [])
+    .map((p, postIdx) => {
+      const id = postId(currentIndex, activeLyricIndex, postIdx);
+      const liked = isLiked(id);
+      const footer = `
+        <div class="post-footer">
+          <button class="post-like ${liked ? "is-liked" : ""}"
+                  type="button"
+                  data-action="like"
+                  data-post-id="${id}"
+                  aria-pressed="${liked}">
+            ${HEART_SVG(liked)}
+            <span class="post-like-count">${formatCount(getLikes(id))}</span>
+          </button>
+          <span class="post-views">
+            ${EYE_SVG}
+            <span class="post-view-count">${formatCount(getViews(id))}</span>
+          </span>
+        </div>`;
+
+      if (p.type === "image") {
+        const cap = p.caption
+          ? `<p class="post-caption">${escapeHtml(p.caption)}</p>`
+          : "";
+        return `
+          <article class="post post-image" data-action="open" data-post-id="${id}">
+            <div class="post-image-frame">
+              <img src="${escapeAttr(p.src)}" alt="${escapeAttr(p.caption || "")}" loading="lazy">
+              ${cap}
+            </div>
+            ${footer}
+          </article>`;
+      }
+      const title = p.title
+        ? `<h4 class="post-title">${escapeHtml(p.title)}</h4>`
+        : "";
+      return `
+        <article class="post post-text" data-action="open" data-post-id="${id}">
+          <div class="post-text-content">
+            ${title}
+            <p class="post-body">${escapeHtml(p.body || "")}</p>
+          </div>
+          ${footer}
+        </article>`;
+    })
+    .join("");
+
+  // Restart entry animation on the container so the swap feels intentional
+  postsContainer.style.animation = "none";
+  void postsContainer.offsetWidth; // force reflow
+  postsContainer.style.animation = "";
+}
+
+function bindLyrics() {
+  // Click a lyric → seek to that line's time slice + activate
+  lyricsList.addEventListener("click", (e) => {
+    const li = e.target.closest("[data-lyric-index]");
+    if (!li) return;
+    const i = Number(li.dataset.lyricIndex);
+    setActiveLyric(i, { seek: true });
+  });
+}
+
+// --------------------------------------------------------------------------
+// Post card clicks (like + open modal)
+// --------------------------------------------------------------------------
+function bindPosts() {
+  postsContainer.addEventListener("click", (e) => {
+    const likeBtn = e.target.closest('[data-action="like"]');
+    if (likeBtn) {
+      e.stopPropagation();
+      toggleLike(likeBtn.dataset.postId);
+      return;
+    }
+    const card = e.target.closest('[data-action="open"]');
+    if (card) openPostModal(card.dataset.postId);
+  });
+}
+
+function toggleLike(id) {
+  const next = !isLiked(id);
+  setLiked(id, next);
+  syncLikeUI(id);
+}
+
+// Updates every DOM node that displays this post's like state (cards + modal)
+function syncLikeUI(id) {
+  const liked = isLiked(id);
+  const count = formatCount(getLikes(id));
+  document
+    .querySelectorAll(`[data-action="like"][data-post-id="${id}"]`)
+    .forEach((btn) => {
+      btn.classList.toggle("is-liked", liked);
+      btn.setAttribute("aria-pressed", String(liked));
+      const path = btn.querySelector("svg path");
+      if (path) path.setAttribute("fill", liked ? "currentColor" : "none");
+      const c = btn.querySelector(".post-like-count");
+      if (c) c.textContent = count;
+    });
+  if (currentModalPostId === id) {
+    postModalLike.classList.toggle("is-liked", liked);
+    postModalLike.setAttribute("aria-pressed", String(liked));
+    const path = postModalLike.querySelector("svg path");
+    if (path) path.setAttribute("fill", liked ? "currentColor" : "none");
+    postModalLikeCount.textContent = count;
+  }
+}
+
+// --------------------------------------------------------------------------
+// Post detail modal
+// --------------------------------------------------------------------------
+let currentModalPostId = null;
+
+function openPostModal(id) {
+  const [w, l, p] = parsePostId(id);
+  const post = works[w]?.lyrics?.[l]?.posts?.[p];
+  if (!post) return;
+
+  // Bump views (per-visit increment), persist, sync card
+  const newViews = bumpViews(id);
+  document
+    .querySelectorAll(`[data-post-id="${id}"] .post-view-count`)
+    .forEach((el) => (el.textContent = formatCount(newViews)));
+
+  currentModalPostId = id;
+
+  // Render content
+  if (post.type === "image") {
+    postModalBody.innerHTML = `
+      <img src="${escapeAttr(post.src)}" alt="${escapeAttr(post.caption || "")}">
+      ${post.caption ? `<div class="modal-text-content"><p>${escapeHtml(post.caption)}</p></div>` : ""}
+    `;
+  } else {
+    postModalBody.innerHTML = `
+      <div class="modal-text-content">
+        ${post.title ? `<h3>${escapeHtml(post.title)}</h3>` : ""}
+        <p>${escapeHtml(post.body || "")}</p>
+      </div>
+    `;
+  }
+
+  postModalLikeCount.textContent = formatCount(getLikes(id));
+  postModalViewCount.textContent = formatCount(newViews);
+  postModalLike.classList.toggle("is-liked", isLiked(id));
+  postModalLike.setAttribute("aria-pressed", String(isLiked(id)));
+  const path = postModalLike.querySelector("svg path");
+  if (path) path.setAttribute("fill", isLiked(id) ? "currentColor" : "none");
+
+  postModal.hidden = false;
+  postModalBody.scrollTop = 0;
+}
+
+function closePostModal() {
+  postModal.hidden = true;
+  currentModalPostId = null;
+}
+
+function bindPostModal() {
+  postModalClose.addEventListener("click", closePostModal);
+  postModalBackdrop.addEventListener("click", closePostModal);
+  postModalLike.addEventListener("click", () => {
+    if (currentModalPostId) toggleLike(currentModalPostId);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (!postModal.hidden && e.code === "Escape") closePostModal();
+  });
+}
+
+// Each lyric occupies an equal slice of the track's duration.
+// Could be replaced with explicit per-line timestamps later if desired.
+function lyricIndexForTime(seconds) {
+  const work = works[currentIndex];
+  const lyrics = work.lyrics || [];
+  if (!lyrics.length) return 0;
+  const total = durationToSeconds(work.duration);
+  const slice = total / lyrics.length;
+  return Math.min(lyrics.length - 1, Math.floor(seconds / slice));
+}
+
+function lyricStartTime(index) {
+  const work = works[currentIndex];
+  const lyrics = work.lyrics || [];
+  if (!lyrics.length) return 0;
+  const total = durationToSeconds(work.duration);
+  return Math.floor((total / lyrics.length) * index);
+}
+
+function setActiveLyric(i, { seek = false } = {}) {
+  const work = works[currentIndex];
+  const lyrics = work.lyrics || [];
+  if (!lyrics.length) return;
+  i = Math.max(0, Math.min(lyrics.length - 1, i));
+  if (i === activeLyricIndex && !seek) return;
+
+  activeLyricIndex = i;
+  if (seek) {
+    progressSeconds = lyricStartTime(i);
+    renderProgress();
+  }
+  // Toggle active class without re-rendering the whole list (preserves animations)
+  lyricsList.querySelectorAll(".lyric").forEach((el) =>
+    el.classList.toggle(
+      "is-active",
+      Number(el.dataset.lyricIndex) === activeLyricIndex
+    )
+  );
+  renderLinerNotes();
+}
+
+function syncActiveLyricToTime() {
+  const i = lyricIndexForTime(progressSeconds);
+  if (i !== activeLyricIndex) setActiveLyric(i);
+}
+
+// Tiny HTML escaping for user-authored content
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+function escapeAttr(s) {
+  return escapeHtml(s).replace(/"/g, "&quot;");
+}
+
+// --------------------------------------------------------------------------
+// Post engagement: each post is a "social-style" card with likes + views,
+// persisted in localStorage (keyed by `${workIdx}.${lyricIdx}.${postIdx}`).
+// Initial counts are deterministic from the ID hash so each post has
+// stable, varied "starting" numbers without manual data entry.
+// --------------------------------------------------------------------------
+function postId(w, l, p) { return `${w}.${l}.${p}`; }
+function parsePostId(id) { return id.split(".").map(Number); }
+
+function hashId(s) {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h * 33) + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+function initialLikes(id) { return 28 + (hashId(id) % 220); }      // 28–247
+function initialViews(id) { return 640 + (hashId(id + ":v") % 4200); } // 640–4839
+
+function getViews(id) {
+  const v = localStorage.getItem(`px-views:${id}`);
+  return v ? Number(v) : initialViews(id);
+}
+function bumpViews(id) {
+  const next = getViews(id) + 1;
+  localStorage.setItem(`px-views:${id}`, String(next));
+  return next;
+}
+function isLiked(id) { return localStorage.getItem(`px-liked:${id}`) === "1"; }
+function setLiked(id, liked) {
+  if (liked) localStorage.setItem(`px-liked:${id}`, "1");
+  else localStorage.removeItem(`px-liked:${id}`);
+}
+function getLikes(id) { return initialLikes(id) + (isLiked(id) ? 1 : 0); }
+
+function formatCount(n) {
+  if (n < 1000) return String(n);
+  if (n < 1e6) {
+    const k = n / 1000;
+    return (k < 10 ? k.toFixed(1) : k.toFixed(0)).replace(/\.0$/, "") + "k";
+  }
+  return (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M";
+}
+
+// SVG markup helpers (kept here so the renderer is self-contained)
+const HEART_SVG = (filled) => `
+  <svg class="post-like-icon" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+    <path d="M12 21l-1.5-1.4C5 14.4 2 11.7 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2 1.1-1.2 2.8-2 4.5-2C19.6 3 22 5.4 22 8.5c0 3.2-3 5.9-8.5 11.1L12 21z"
+      stroke="currentColor" stroke-width="1.7" fill="${filled ? "currentColor" : "none"}"/>
+  </svg>`;
+const EYE_SVG = `
+  <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+    <path fill="currentColor" d="M12 5C7 5 2.7 8.1 1 12c1.7 3.9 6 7 11 7s9.3-3.1 11-7c-1.7-3.9-6-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+  </svg>`;
+
 function buildQueue() {
   queueList.innerHTML = "";
   works.forEach((work, i) => {
@@ -151,7 +721,10 @@ function buildQueue() {
       <div class="queue-thumb" style="background: ${thumbBg};"></div>
       <div class="queue-meta">
         <span class="queue-title">${work.title}</span>
-        <span class="queue-sub">${work.subtitle}</span>
+        <span class="queue-sub">
+          <a class="queue-artist" data-view="contact" href="#">${ARTIST}</a>
+          <span class="queue-sub-sep">·</span> ${work.subtitle}
+        </span>
       </div>
       <span class="queue-duration">${work.duration}</span>
     `;
@@ -168,8 +741,10 @@ function selectIndex(index) {
   if (index === currentIndex) return;
 
   currentIndex = index;
+  activeLyricIndex = 0;
   applyDiscStates();
   updateNowPlaying();
+  renderLyrics();
   resetProgress();
 }
 
@@ -184,6 +759,10 @@ function updateNowPlaying() {
   document.documentElement.style.setProperty("--accent-2", work.accent2);
   document.documentElement.style.setProperty("--accent-3", work.accent3);
 
+  // Per-track light/dark theme — flips bg, text, glass surfaces, blob blend mode.
+  // Fallback to dark when a work doesn't declare `theme` (placeholders, etc).
+  document.documentElement.dataset.theme = work.theme || "dark";
+
   // Fade content
   [npTitle, npSubtitle, npDescription].forEach((el) => {
     el.style.opacity = "0";
@@ -192,7 +771,9 @@ function updateNowPlaying() {
 
   setTimeout(() => {
     npTitle.textContent = work.title;
-    npSubtitle.textContent = work.subtitle;
+    npSubtitle.innerHTML =
+      `<a class="np-artist" data-view="contact" href="#">${ARTIST}</a>` +
+      ` <span class="np-sep">·</span> ${work.subtitle}`;
     npDescription.textContent = work.description;
 
     npTags.innerHTML = "";
@@ -219,6 +800,14 @@ function updateNowPlaying() {
   queueList.querySelectorAll(".queue-item").forEach((el) => {
     el.classList.toggle("is-active", Number(el.dataset.index) === currentIndex);
   });
+
+  // Profile pane mirrors the active track in its "Now Listening To" row
+  const gradient = `linear-gradient(135deg, ${work.accent1}, ${work.accent2})`;
+  profileNowThumb.style.background = work.cover
+    ? `url('${work.cover}') center/cover no-repeat, ${gradient}`
+    : gradient;
+  profileNowTitle.textContent = work.title;
+  profileNowSub.textContent = work.subtitle;
 }
 
 // --------------------------------------------------------------------------
@@ -256,6 +845,7 @@ function startProgressTimer() {
       return;
     }
     renderProgress();
+    syncActiveLyricToTime();
   }, 1000);
 }
 
@@ -332,11 +922,62 @@ function bindControls() {
   });
 
   document.addEventListener("keydown", (e) => {
+    if (!introDismissed) return;     // intro absorbs keys until dismissed
+    if (!postModal.hidden) return;   // modal absorbs keys (ESC handled separately)
     if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
     if (e.code === "Space") { e.preventDefault(); togglePlay(); }
     if (e.code === "ArrowLeft") selectIndex(currentIndex - 1);
     if (e.code === "ArrowRight") selectIndex(currentIndex + 1);
   });
+}
+
+// --------------------------------------------------------------------------
+// Intro / welcome overlay
+// --------------------------------------------------------------------------
+function dismissIntro({ play = false } = {}) {
+  if (introDismissed) return;
+  introDismissed = true;
+  intro.classList.add("intro--exit");
+  setTimeout(() => intro.remove(), 900);
+  if (play && !isPlaying) togglePlay();
+}
+
+function bindIntro() {
+  introCta.addEventListener("click", () => dismissIntro({ play: true }));
+  // Bubble-phase listener on window — fires AFTER document handlers,
+  // so the main keydown's `if (!introDismissed) return` short-circuits cleanly.
+  window.addEventListener("keydown", () => {
+    if (!introDismissed) dismissIntro();
+  });
+}
+
+// --------------------------------------------------------------------------
+// View switcher (Library ↔ Contact). Triggered by any <a>/<button> with
+// [data-view], which lets nav links AND in-content artist links both work.
+// --------------------------------------------------------------------------
+function switchView(view) {
+  if (!view) return;
+  stage.dataset.view = view;
+  document.querySelectorAll(".nav-link").forEach((l) =>
+    l.classList.toggle("is-active", l.dataset.view === view)
+  );
+}
+
+function bindNav() {
+  // Capture phase so this fires before any bubbling listener (e.g. a queue
+  // item's "play this track" handler) — clicking the artist link inside a
+  // queue row should switch view, not switch tracks.
+  document.addEventListener(
+    "click",
+    (e) => {
+      const target = e.target.closest("a[data-view], button[data-view]");
+      if (!target) return;
+      e.preventDefault();
+      e.stopPropagation();
+      switchView(target.dataset.view);
+    },
+    true
+  );
 }
 
 // --------------------------------------------------------------------------
@@ -347,8 +988,14 @@ function init() {
   buildQueue();
   applyDiscStates();
   updateNowPlaying();
+  renderLyrics();
   renderProgress();
   bindControls();
+  bindIntro();
+  bindNav();
+  bindLyrics();
+  bindPosts();
+  bindPostModal();
   enableWheelAndSwipe();
 }
 

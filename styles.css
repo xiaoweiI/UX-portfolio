@@ -3,13 +3,36 @@
    Apple Music-inspired turntable UI
    ========================================================================== */
 
+/* Register accent colors as <color> so the browser actually interpolates
+   their RGB values when JS swaps them on track change (default CSS variable
+   transitions snap; @property-registered ones are animatable). */
+@property --accent-1 {
+  syntax: "<color>";
+  initial-value: #ff8b3b;
+  inherits: true;
+}
+@property --accent-2 {
+  syntax: "<color>";
+  initial-value: #ffaa40;
+  inherits: true;
+}
+@property --accent-3 {
+  syntax: "<color>";
+  initial-value: #3fd1c9;
+  inherits: true;
+}
+
 :root {
   /* Theme color of the currently playing work — JS updates this */
   --accent-1: #6e8efb;
   --accent-2: #a777e3;
   --accent-3: #ff7eb3;
 
-  --bg-deep: #1a1a26;
+  /* ---- Dark theme tokens (default) ----
+     Each work in works[] declares theme: "dark" | "light"; JS mirrors that
+     onto <html data-theme="…"> so the [data-theme="light"] block below can
+     override these tokens for light-themed projects (e.g. Ecodemand). */
+  --bg-deep: #0c0b0a;
   --text-primary: rgba(255, 255, 255, 0.98);
   --text-secondary: rgba(255, 255, 255, 0.72);
   --text-tertiary: rgba(255, 255, 255, 0.50);
@@ -18,9 +41,69 @@
   --glass-bg-strong: rgba(255, 255, 255, 0.14);
   --glass-border: rgba(255, 255, 255, 0.20);
 
+  /* Inner-card surfaces (quote-echo, designer-note, queue rows, modal frames…) */
+  --surface-1: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --surface-3: rgba(255, 255, 255, 0.10);
+
+  /* Outer panel surfaces (.now-playing, .np-posts, .profile) */
+  --panel-bg: rgba(255, 255, 255, 0.07);
+  --panel-border: rgba(255, 255, 255, 0.18);
+  --panel-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+  --panel-inset-top: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+
+  /* Background layer behavior — these flip on light theme so blobs and noise
+     read correctly on the inverted base color. */
+  --blob-blend: screen;
+  --noise-tone: linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.25));
+  --noise-blend: overlay;
+  --noise-opacity: 0.5;
+  --noise-dot-color: rgba(255,255,255,0.04);
+
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --rotate-duration: 900ms;
+
+  /* Smoothly cross-fade accent colors when JS swaps them on track change.
+     Works because of the @property declarations above. */
+  transition:
+    --accent-1 1.4s var(--ease-out),
+    --accent-2 1.4s var(--ease-out),
+    --accent-3 1.4s var(--ease-out);
+}
+
+/* ---- Light theme override ----
+   Triggered when active work declares theme:"light" (Ecodemand, etc.). */
+:root[data-theme="light"] {
+  --bg-deep: #f4f5fb;
+  --text-primary: rgba(20, 25, 40, 0.96);
+  --text-secondary: rgba(20, 25, 40, 0.62);
+  --text-tertiary: rgba(20, 25, 40, 0.42);
+  --hairline: rgba(20, 25, 40, 0.10);
+
+  /* Glass surfaces become near-white frosted, not transparent-white — gives
+     the airy "Apple Music light" feel rather than washed-out. */
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-bg-strong: rgba(255, 255, 255, 0.80);
+  --glass-border: rgba(255, 255, 255, 0.95);
+
+  /* Inner cards: subtle dark wash on white instead of subtle white wash on dark. */
+  --surface-1: rgba(20, 25, 40, 0.03);
+  --surface-2: rgba(20, 25, 40, 0.05);
+  --surface-3: rgba(20, 25, 40, 0.08);
+
+  --panel-bg: rgba(255, 255, 255, 0.78);
+  --panel-border: rgba(255, 255, 255, 0.95);
+  --panel-shadow: 0 18px 50px rgba(40, 50, 80, 0.10);
+  --panel-inset-top: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  /* On light bg, screen blend makes blobs invisible. multiply darkens the
+     light surface with the accent hue, producing pastel washes. */
+  --blob-blend: multiply;
+  --noise-tone: linear-gradient(180deg, rgba(40,50,80,0.02), rgba(40,50,80,0.04));
+  --noise-blend: multiply;
+  --noise-opacity: 0.7;
+  --noise-dot-color: rgba(40,50,80,0.04);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,6 +121,23 @@ body {
   background: var(--bg-deep);
   -webkit-font-smoothing: antialiased;
   position: relative;
+  /* Crossfade base bg + text when JS toggles data-theme on track change. */
+  transition:
+    background-color 1.4s var(--ease-out),
+    color 1.4s var(--ease-out);
+}
+
+/* Glass panels crossfade their surface tokens when theme flips. */
+.now-playing,
+.np-posts,
+.profile,
+.post-modal-card {
+  transition:
+    background-color 1.4s var(--ease-out),
+    border-color 1.4s var(--ease-out),
+    box-shadow 1.4s var(--ease-out),
+    opacity 0.5s var(--ease-out),
+    transform 0.5s var(--ease-out);
 }
 
 /* --------------------------------------------------------------------------
@@ -46,13 +146,86 @@ body {
 .bg-layer {
   position: fixed; inset: 0;
   z-index: -2;
-  background:
-    radial-gradient(75% 70% at 22% 28%, var(--accent-1) 0%, transparent 58%),
-    radial-gradient(70% 70% at 80% 78%, var(--accent-2) 0%, transparent 62%),
-    radial-gradient(55% 55% at 50% 105%, var(--accent-3) 0%, transparent 58%),
-    var(--bg-deep);
-  filter: saturate(1.25) brightness(1.08);
-  transition: background 1.2s var(--ease-out);
+  background-color: var(--bg-deep);
+  overflow: hidden;
+}
+
+/* Each blob is a GPU-composited element animated via transform — way
+   smoother than animating background-* on the parent (which forces
+   re-rasterization each frame and reads as "static" through heavy backdrop
+   filters). Sized & dimmed so the dark base dominates and blobs read as
+   spots of color glow, not full-screen color washes. */
+.blob {
+  position: absolute;
+  width: 38vmax;
+  height: 38vmax;
+  border-radius: 50%;
+  filter: blur(140px);
+  opacity: 0.28;
+  mix-blend-mode: var(--blob-blend);
+  will-change: transform;
+  transition: background 1.4s var(--ease-out);
+}
+
+.blob-1 {
+  top: -10%;
+  left: -10%;
+  background: var(--accent-1);
+  animation: drift1 22s ease-in-out infinite;
+}
+.blob-2 {
+  top: 0%;
+  right: -15%;
+  width: 32vmax;
+  height: 32vmax;
+  background: var(--accent-2);
+  opacity: 0.22;
+  animation: drift2 26s ease-in-out infinite;
+}
+.blob-3 {
+  /* Cyan accent — kept rare and small, like the lone Protein ring in
+     the reference. Reads as a single cool data spot, not a wash. */
+  bottom: -15%;
+  left: 15%;
+  width: 22vmax;
+  height: 22vmax;
+  background: var(--accent-3);
+  opacity: 0.18;
+  animation: drift3 24s ease-in-out infinite;
+}
+.blob-4 {
+  bottom: -5%;
+  right: 5%;
+  width: 32vmax;
+  height: 32vmax;
+  background: var(--accent-1);
+  opacity: 0.18;
+  animation: drift4 30s ease-in-out infinite;
+}
+
+@keyframes drift1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(35vw, 25vh) scale(1.15); }
+  66%      { transform: translate(20vw, 50vh) scale(0.95); }
+}
+@keyframes drift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(-20vw, 30vh) scale(1.1); }
+  66%      { transform: translate(-35vw, 10vh) scale(1.2); }
+}
+@keyframes drift3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(40vw, -15vh) scale(1.1); }
+  66%      { transform: translate(15vw, -35vh) scale(1.25); }
+}
+@keyframes drift4 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(-25vw, -30vh) scale(1.2); }
+  66%      { transform: translate(-50vw, -10vh) scale(0.9); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob { animation: none; }
 }
 
 .bg-noise {
@@ -60,11 +233,138 @@ body {
   z-index: -1;
   pointer-events: none;
   background-image:
-    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0),
-    linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.25));
+    radial-gradient(circle at 1px 1px, var(--noise-dot-color) 1px, transparent 0),
+    var(--noise-tone);
   background-size: 3px 3px, 100% 100%;
-  mix-blend-mode: overlay;
-  opacity: 0.5;
+  mix-blend-mode: var(--noise-blend);
+  opacity: var(--noise-opacity);
+}
+
+/* --------------------------------------------------------------------------
+   Intro / welcome overlay
+   -------------------------------------------------------------------------- */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: rgba(20, 20, 36, 0.55);
+  backdrop-filter: blur(40px) saturate(1.4);
+  -webkit-backdrop-filter: blur(40px) saturate(1.4);
+  transition:
+    opacity 0.85s var(--ease-out),
+    transform 0.85s var(--ease-out),
+    backdrop-filter 0.85s var(--ease-out);
+}
+
+.intro--exit {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+  backdrop-filter: blur(0px) saturate(1);
+  -webkit-backdrop-filter: blur(0px) saturate(1);
+}
+
+.intro-content {
+  text-align: center;
+  max-width: 640px;
+  padding: 0 32px;
+  animation: introRise 1.05s var(--ease-out) both;
+}
+
+@keyframes introRise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.intro-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 26px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.intro-title {
+  font-size: clamp(40px, 7vw, 84px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  margin-bottom: 18px;
+}
+
+.intro-name {
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.intro-tagline {
+  font-size: clamp(15px, 1.4vw, 18px);
+  line-height: 1.55;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.intro-pitch {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text-tertiary);
+  max-width: 56ch;
+  margin: 0 auto 32px;
+}
+
+.intro-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 26px 0 22px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: white;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.28),
+    0 0 32px var(--accent-2);
+  transition:
+    transform 0.2s var(--ease-out),
+    box-shadow 0.3s var(--ease-out);
+}
+.intro-cta:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.34),
+    0 0 50px var(--accent-2);
+}
+.intro-cta:active {
+  transform: translateY(0) scale(0.98);
+}
+.intro-cta svg {
+  margin-left: 2px;
+}
+
+.intro-hint {
+  margin-top: 16px;
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.04em;
 }
 
 /* --------------------------------------------------------------------------
@@ -88,7 +388,7 @@ body {
 }
 .brand-dot {
   width: 8px; height: 8px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
   box-shadow: 0 0 12px var(--accent-2);
   transition: background 1s var(--ease-out), box-shadow 1s var(--ease-out);
 }
@@ -121,9 +421,43 @@ body {
   position: relative;
   height: 100vh;
   display: grid;
-  grid-template-columns: 50% 50%;
+  /* Three columns: turntable | Now Playing | Liner Notes (narrow) */
+  grid-template-columns: 38% 35% 27%;
   align-items: center;
   padding-top: 64px;
+}
+
+.now-playing { grid-column: 2; grid-row: 1; align-self: stretch; }
+.np-posts    { grid-column: 3; grid-row: 1; align-self: stretch; }
+
+/* When the active track has no Liner Notes (e.g. placeholder works),
+   expand Now Playing to fill the right two columns instead of leaving a gap. */
+.stage:has(#npPosts[hidden]) .now-playing { grid-column: 2 / 4; }
+
+/* Profile spans the right two columns when in Contact view */
+.profile {
+  grid-column: 2 / 4;
+  grid-row: 1;
+  align-self: stretch;
+}
+
+/* Per-panel transitions are declared up top alongside the body theme transition. */
+.profile {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+.stage[data-view="contact"] .now-playing,
+.stage[data-view="contact"] .np-posts {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+.stage[data-view="contact"] .profile {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  z-index: 2;
 }
 
 /* --------------------------------------------------------------------------
@@ -139,7 +473,7 @@ body {
 }
 
 .turntable {
-  --size: min(72vh, 580px);
+  --size: min(64vh, 500px);
   position: relative;
   width: var(--size);
   height: var(--size);
@@ -386,31 +720,50 @@ body.is-playing .disc[data-state="active"] .disc-spin {
 .now-playing {
   position: relative;
   height: calc(100vh - 64px);
-  margin: 16px 32px 32px 0;
-  padding: 36px 40px 32px;
+  margin: 16px 14px 32px 0;
+  padding: 32px 32px 28px;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
   backdrop-filter: blur(48px) saturate(1.5);
   -webkit-backdrop-filter: blur(48px) saturate(1.5);
   box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+    var(--panel-shadow),
+    var(--panel-inset-top);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.now-playing::-webkit-scrollbar { width: 6px; }
+.now-playing::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 3px;
 }
 
 .now-playing::before {
+  /* Concentrated warm halo, top-right corner only — panel body stays
+     uniformly dark-glass so the accent reads as glow, not a wash. */
   content: "";
   position: absolute;
-  top: -45%; left: -25%;
-  width: 150%; height: 90%;
-  background: radial-gradient(closest-side, var(--accent-1) 0%, transparent 70%);
-  opacity: 0.5;
-  filter: blur(50px);
+  top: -20%; right: -15%;
+  width: 70%; height: 55%;
+  background: radial-gradient(closest-side, var(--accent-1) 0%, transparent 72%);
+  opacity: 0.22;
+  filter: blur(60px);
   pointer-events: none;
   transition: background 1s var(--ease-out);
+}
+.now-playing::after {
+  /* Second small halo behind the play-button area at the bottom. */
+  content: "";
+  position: absolute;
+  bottom: -8%; left: 22%;
+  width: 56%; height: 38%;
+  background: radial-gradient(closest-side, var(--accent-2) 0%, transparent 70%);
+  opacity: 0.20;
+  filter: blur(55px);
+  pointer-events: none;
+  transition: background 1s var(--ease-out);
+  z-index: 0;
 }
 
 .np-header {
@@ -455,6 +808,24 @@ body.is-playing .disc[data-state="active"] .disc-spin {
   transition: opacity .35s var(--ease-out);
 }
 
+/* Artist link — clickable to open Contact, like Apple Music */
+.np-artist {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color .2s, opacity .2s;
+}
+.np-artist:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+.np-sep {
+  color: var(--text-tertiary);
+  margin: 0 4px;
+}
+
 .np-description {
   font-size: 15px;
   line-height: 1.6;
@@ -494,14 +865,14 @@ body.is-playing .disc[data-state="active"] .disc-spin {
 .np-progress-track {
   height: 4px;
   border-radius: 2px;
-  background: rgba(255,255,255,0.10);
+  background: var(--surface-3);
   overflow: hidden;
   margin-bottom: 6px;
 }
 .np-progress-fill {
   height: 100%;
   width: 32%;
-  background: linear-gradient(90deg, var(--accent-1), var(--accent-3));
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
   border-radius: 2px;
   transition: width .2s linear, background 1s var(--ease-out);
 }
@@ -548,7 +919,7 @@ body.is-playing .disc[data-state="active"] .disc-spin {
 
 .ctrl-play {
   width: 56px; height: 56px;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
   border-color: transparent;
   box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 0 24px var(--accent-2);
   transition: background 1s var(--ease-out), box-shadow 1s var(--ease-out), scale .15s;
@@ -559,11 +930,594 @@ body.is-playing .disc[data-state="active"] .disc-spin {
 .is-playing .ctrl-play .icon-play { display: none; }
 .is-playing .ctrl-play .icon-pause { display: block; }
 
+/* --- Section header (shared by lyrics, liner notes, queue) --- */
+.np-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.np-section-meta {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: 0.04em;
+}
+
+/* --- Lyrics: timeline + numbered + active pill (Apple Music meets Genius) --- */
+.np-lyrics {
+  margin: 4px 0 18px;
+  position: relative; z-index: 1;
+}
+
+.lyrics-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+.lyrics-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+  box-shadow: 0 0 8px var(--accent-2);
+  animation: lyricPulse 1.6s ease-in-out infinite;
+}
+body:not(.is-playing) .lyrics-pill-dot { animation-play-state: paused; }
+@keyframes lyricPulse {
+  0%, 100% { opacity: 0.65; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.25); }
+}
+
+.lyrics-list {
+  position: relative;
+  list-style: none;
+  padding: 8px 0 4px;
+  margin-top: 6px;
+}
+.lyrics-list::before {
+  /* Vertical timeline line connecting the dots */
+  content: "";
+  position: absolute;
+  left: 49px;
+  top: 16px;
+  bottom: 16px;
+  width: 1px;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    var(--surface-3) 6%,
+    var(--surface-3) 94%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.lyric {
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  align-items: center;
+  column-gap: 16px;
+  padding: 11px 16px 11px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.4s var(--ease-out);
+}
+.lyric.is-active { transform: translateX(2px); }
+.lyric.is-active::before {
+  /* Full-width tinted pill background, themed by current accent */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  opacity: 0.16;
+  pointer-events: none;
+}
+.lyric.is-active > * {
+  position: relative;
+  z-index: 1;
+}
+
+.lyric-marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding-right: 4px;
+}
+
+.lyric-num {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  min-width: 22px;
+  transition: color 0.3s var(--ease-out);
+}
+.lyric.is-active .lyric-num {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.lyric-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--glass-border);
+  transition: background 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+}
+.lyric:hover .lyric-dot {
+  background: var(--accent-2);
+  transform: scale(1.15);
+}
+.lyric.is-active .lyric-dot { display: none; }
+
+.lyric-eq {
+  display: none;
+  align-items: end;
+  justify-content: space-between;
+  width: 14px;
+  height: 14px;
+}
+.lyric.is-active .lyric-eq { display: inline-flex; }
+.lyric-eq span {
+  display: block;
+  width: 2.5px;
+  background: linear-gradient(180deg, var(--accent-1), var(--accent-2));
+  border-radius: 1px;
+  animation: lyricEq 0.9s ease-in-out infinite;
+}
+.lyric-eq span:nth-child(1) { animation-delay: -0.2s; }
+.lyric-eq span:nth-child(2) { animation-delay: -0.5s; }
+.lyric-eq span:nth-child(3) { animation-delay: -0.1s; }
+@keyframes lyricEq {
+  0%, 100% { height: 35%; }
+  50%      { height: 100%; }
+}
+body:not(.is-playing) .lyric.is-active .lyric-eq span {
+  animation-play-state: paused;
+}
+
+.lyric-text {
+  font-size: clamp(15px, 1.5vw, 17px);
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--text-primary);
+  opacity: 0.45;
+  transition: opacity 0.4s var(--ease-out);
+}
+.lyric:hover .lyric-text { opacity: 0.8; }
+.lyric.is-active .lyric-text { opacity: 1; }
+
+/* --- Liner Notes: posts for the active lyric --- */
+/* Liner Notes — its own narrow panel on the right */
+.np-posts {
+  position: relative;
+  height: calc(100vh - 64px);
+  margin: 16px 32px 32px 0;
+  padding: 28px 26px 24px;
+  border-radius: 28px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(48px) saturate(1.5);
+  -webkit-backdrop-filter: blur(48px) saturate(1.5);
+  box-shadow:
+    var(--panel-shadow),
+    var(--panel-inset-top);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.np-posts::-webkit-scrollbar { width: 6px; }
+.np-posts::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 3px;
+}
+
+/* --- Quote echo: re-states the active lyric --- */
+.quote-echo {
+  position: relative;
+  margin: 0 0 16px;
+  padding: 16px 20px 18px 56px;
+  border-radius: 14px;
+  background: var(--surface-1);
+  border: 1px solid var(--glass-border);
+}
+.quote-mark {
+  position: absolute;
+  left: 14px;
+  top: 0;
+  font-family: 'Georgia', 'Fraunces', serif;
+  font-size: 56px;
+  line-height: 1;
+  color: var(--accent-2);
+  opacity: 0.7;
+  font-weight: 700;
+  pointer-events: none;
+}
+.quote-line {
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.quote-question {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* --- Designer's Note (the "why" behind the lyric) --- */
+.designer-note {
+  display: flex;
+  gap: 14px;
+  margin: 0 0 18px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--surface-1);
+  border: 1px solid var(--glass-border);
+  position: relative;
+  overflow: hidden;
+}
+.designer-note::before {
+  /* Subtle accent halo on the left edge */
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent-1), var(--accent-2));
+  opacity: 0.7;
+}
+.designer-note-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  display: grid;
+  place-items: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+.designer-note-content {
+  flex: 1;
+  min-width: 0;
+}
+.designer-note-label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.designer-note-body {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--text-primary);
+}
+
+/* --- User Voices --- */
+.user-voices {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--hairline);
+}
+.user-voices-label {
+  display: block;
+  margin-bottom: 12px;
+}
+.voices-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.voice {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+.voice-quote {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+.voice-quote::before { content: '“'; }
+.voice-quote::after  { content: '”'; }
+.voice-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+}
+.voice-author {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.voice-tag {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--glass-border);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.posts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: postsFade 0.45s var(--ease-out);
+}
+
+@keyframes postsFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.post {
+  border-radius: 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out), border-color 0.2s;
+}
+.post:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  border-color: var(--glass-bg-strong);
+}
+
+.post-text-content {
+  padding: 18px 20px;
+  flex: 1;
+}
+.post-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+.post-body {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+.post-body strong { color: var(--text-primary); font-weight: 600; }
+
+/* Image post — "lyric poster" treatment */
+.post-image {
+  padding: 0;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+}
+.post-image-frame {
+  position: relative;
+  flex: 1;
+}
+.post-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 360px;
+  object-fit: cover;
+  background: #1a1a26;
+}
+.post-caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 28px 20px 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.92);
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.6));
+  pointer-events: none;
+}
+
+/* Post footer — like + views (social-post style) */
+.post-footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--hairline);
+  background: var(--surface-1);
+}
+.post-image .post-footer {
+  background: rgba(0, 0, 0, 0.32);
+  border-top-color: rgba(255, 255, 255, 0.10);
+}
+
+.post-like {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  margin: -4px -8px -4px -4px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s, transform 0.1s;
+}
+.post-like:hover {
+  color: var(--text-primary);
+  background: var(--surface-2);
+}
+.post-like:active { transform: scale(0.92); }
+.post-like.is-liked {
+  color: #ff5e62;
+}
+.post-like.is-liked .post-like-icon path {
+  fill: currentColor;
+  stroke: currentColor;
+  animation: likePop 0.4s var(--ease-out);
+}
+@keyframes likePop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+.post-views {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+
+.post-like.is-large,
+.post-views.is-large {
+  font-size: 14px;
+  gap: 8px;
+}
+.post-like.is-large { padding: 8px 14px; margin: 0; }
+
+/* --- Post detail modal --- */
+.post-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+.post-modal:not([hidden]) {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.post-modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(20, 20, 36, 0.55);
+  backdrop-filter: blur(40px) saturate(1.4);
+  -webkit-backdrop-filter: blur(40px) saturate(1.4);
+}
+
+.post-modal-card {
+  position: relative;
+  max-width: 720px;
+  width: 100%;
+  max-height: 88vh;
+  border-radius: 24px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(48px) saturate(1.5);
+  -webkit-backdrop-filter: blur(48px) saturate(1.5);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalRise 0.4s var(--ease-out);
+}
+
+@keyframes modalRise {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.post-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s, transform 0.15s;
+}
+.post-modal-close:hover { background: rgba(0, 0, 0, 0.6); transform: scale(1.05); }
+
+.post-modal-body {
+  flex: 1;
+  overflow-y: auto;
+}
+.post-modal-body::-webkit-scrollbar { width: 6px; }
+.post-modal-body::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 3px; }
+
+.post-modal-body img {
+  display: block;
+  width: 100%;
+  max-height: 55vh;
+  object-fit: cover;
+  background: #1a1a26;
+}
+.post-modal-body .modal-text-content {
+  padding: 32px 40px 28px;
+}
+.post-modal-body h3 {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.post-modal-body p {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--text-primary);
+}
+
+.post-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--hairline);
+  background: rgba(0, 0, 0, 0.18);
+}
+
 /* --- Queue --- */
 .np-queue {
-  margin-top: auto;
+  margin-top: 22px;
+  padding-top: 22px;
   border-top: 1px solid var(--hairline);
-  padding-top: 18px;
   position: relative; z-index: 1;
 }
 
@@ -591,11 +1545,8 @@ body.is-playing .disc[data-state="active"] .disc-spin {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-height: 24vh;
-  overflow-y: auto;
+  /* The whole .now-playing scrolls now, so queue flows naturally */
 }
-.queue-list::-webkit-scrollbar { width: 4px; }
-.queue-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
 .queue-item {
   display: flex;
@@ -634,6 +1585,26 @@ body.is-playing .disc[data-state="active"] .disc-spin {
   font-size: 11px;
   color: var(--text-tertiary);
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.queue-artist {
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color .2s;
+}
+.queue-artist:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+.queue-sub-sep {
+  margin: 0 2px;
 }
 .queue-duration {
   font-size: 11px;
@@ -656,7 +1627,7 @@ body.is-playing .disc[data-state="active"] .disc-spin {
 .queue-eq span {
   display: block;
   width: 3px;
-  background: linear-gradient(180deg, var(--accent-1), var(--accent-3));
+  background: linear-gradient(180deg, var(--accent-1), var(--accent-2));
   border-radius: 2px;
   animation: eq 0.9s ease-in-out infinite;
 }
@@ -673,10 +1644,356 @@ body.is-playing .disc[data-state="active"] .disc-spin {
 body:not(.is-playing) .queue-eq span { animation-play-state: paused; }
 
 /* --------------------------------------------------------------------------
+   Profile / Contact pane (Apple Music profile style)
+   -------------------------------------------------------------------------- */
+.profile {
+  position: relative;
+  height: calc(100vh - 64px);
+  margin: 16px 32px 32px 0;
+  padding: 32px 36px 28px;
+  border-radius: 28px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(48px) saturate(1.5);
+  -webkit-backdrop-filter: blur(48px) saturate(1.5);
+  box-shadow:
+    var(--panel-shadow),
+    var(--panel-inset-top);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.profile::before {
+  /* Concentrated warm corner halo — same restraint as .now-playing::before. */
+  content: "";
+  position: absolute;
+  top: -20%; right: -15%;
+  width: 70%; height: 55%;
+  background: radial-gradient(closest-side, var(--accent-2) 0%, transparent 72%);
+  opacity: 0.22;
+  filter: blur(60px);
+  pointer-events: none;
+  transition: background 1s var(--ease-out);
+}
+
+.profile > * { position: relative; z-index: 1; }
+
+/* --- Identity row ------------------------------------------------------- */
+.profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 12px 0 20px;
+}
+
+.profile-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2) 55%, var(--accent-3));
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.28),
+    0 0 0 4px rgba(255, 255, 255, 0.10) inset,
+    0 0 40px var(--accent-2);
+  transition: background 1s var(--ease-out), box-shadow 1s var(--ease-out);
+  position: relative;
+}
+.profile-avatar::after {
+  /* Faint groove ring — vinyl heritage */
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.10) 0 1px,
+    transparent 1px 6px
+  );
+  mask: radial-gradient(circle, black 30%, transparent 90%);
+  -webkit-mask: radial-gradient(circle, black 30%, transparent 90%);
+  mix-blend-mode: overlay;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.profile-avatar-initial {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.96);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+.profile-id-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.profile-name {
+  font-size: clamp(28px, 3.2vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.profile-handle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* --- Status pill -------------------------------------------------------- */
+.profile-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 7px 14px;
+  margin-bottom: 20px;
+  border-radius: 999px;
+  background: rgba(56, 239, 125, 0.12);
+  border: 1px solid rgba(56, 239, 125, 0.3);
+  color: rgba(220, 255, 232, 0.95);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.profile-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38ef7d;
+  box-shadow: 0 0 8px rgba(56, 239, 125, 0.6);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.65; transform: scale(0.85); }
+}
+
+/* --- Now Listening To (live link to current track) ---------------------- */
+.profile-listening {
+  margin-bottom: 22px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+.profile-section-label {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.profile-listening-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  padding: 6px 8px;
+  margin: -6px -8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.profile-listening-row:hover {
+  background: var(--glass-bg);
+}
+.profile-listening-row:hover .profile-listening-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.profile-listening-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--cover-bg, linear-gradient(135deg, var(--accent-1), var(--accent-2)));
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: background 0.6s var(--ease-out);
+}
+
+.profile-listening-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.profile-listening-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.profile-listening-sub {
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.profile-listening-eq {
+  display: inline-flex;
+  align-items: end;
+  justify-content: space-between;
+  width: 18px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.profile-listening-eq span {
+  display: block;
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent-1), var(--accent-2));
+  border-radius: 2px;
+  animation: eq 0.9s ease-in-out infinite;
+}
+.profile-listening-eq span:nth-child(1) { animation-delay: -0.2s; }
+.profile-listening-eq span:nth-child(2) { animation-delay: -0.4s; }
+.profile-listening-eq span:nth-child(3) { animation-delay: -0.1s; }
+body:not(.is-playing) .profile-listening-eq span { animation-play-state: paused; }
+
+/* --- Bio paragraph ------------------------------------------------------ */
+.profile-bio {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  margin-bottom: 22px;
+  max-width: 56ch;
+}
+
+/* --- Section blocks (On Rotation / Get in Touch) ------------------------ */
+.profile-block {
+  margin-bottom: 22px;
+}
+
+.profile-tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.profile-tags li {
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+}
+
+/* --- Contact list (track-row style) ------------------------------------- */
+.contact-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: background 0.2s, transform 0.2s;
+}
+.contact-item:hover {
+  background: var(--glass-bg);
+}
+.contact-item:hover .contact-arrow {
+  transform: translate(3px, -3px);
+  opacity: 1;
+}
+
+.contact-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: var(--text-primary);
+}
+
+.contact-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.contact-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.contact-value {
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.contact-arrow {
+  color: var(--text-tertiary);
+  font-size: 14px;
+  opacity: 0.7;
+  transition: transform 0.2s var(--ease-out), opacity 0.2s;
+}
+
+/* Scrollbar */
+.profile::-webkit-scrollbar { width: 4px; }
+.profile::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 2px; }
+
+/* --------------------------------------------------------------------------
    Responsive (basic)
    -------------------------------------------------------------------------- */
-@media (max-width: 960px) {
-  .stage { grid-template-columns: 1fr; grid-template-rows: 50% 50%; }
-  .now-playing { margin: 0 16px 16px; height: auto; }
-  .turntable { --size: min(60vh, 420px); margin-left: 0; }
+@media (max-width: 1180px) {
+  .stage {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+  .turntable-section { grid-column: 1 / 3; grid-row: 1; }
+  .now-playing { grid-column: 1; grid-row: 2; margin: 0 8px 16px 16px; height: auto; }
+  .np-posts    { grid-column: 2; grid-row: 2; margin: 0 16px 16px 8px; height: auto; }
+  .profile     { grid-column: 1 / 3; grid-row: 2; margin: 0 16px 16px; height: auto; }
+}
+@media (max-width: 720px) {
+  .stage {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .turntable-section { grid-column: 1; grid-row: 1; }
+  .now-playing { grid-column: 1; grid-row: 2; margin: 0 16px 12px; }
+  .np-posts    { grid-column: 1; grid-row: 3; margin: 0 16px 16px; }
+  .profile     { grid-column: 1; grid-row: 2; margin: 0 16px 16px; }
+  .turntable { --size: min(56vh, 380px); margin-left: 0; }
 }
