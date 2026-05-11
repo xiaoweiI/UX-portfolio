@@ -1337,6 +1337,21 @@ body:not(.is-playing) .lyric.is-active .lyric-eq span {
   object-fit: cover;
   background: #1a1a26;
 }
+
+/* Multi-image row — when post.src is an array, images render side-by-side
+   in a grid. Works for any count via data-count attr (2 is the common case;
+   3 narrows further). The existing .post-image img + .post-modal-body img
+   rules cascade through, so inline cards still crop and modal still shows
+   full-height images — just side by side. */
+.post-image-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  width: 100%;
+}
+.post-image-row[data-count="3"] {
+  grid-template-columns: repeat(3, 1fr);
+}
 .post-caption {
   position: absolute;
   left: 0; right: 0; bottom: 0;
@@ -1490,8 +1505,11 @@ body:not(.is-playing) .lyric.is-active .lyric-eq span {
 .post-modal-body img {
   display: block;
   width: 100%;
-  max-height: 55vh;
-  object-fit: cover;
+  /* No max-height / object-fit here — phone screenshots are ~1:2.1 portrait
+     and cropping them to fit a fixed viewport ratio shows only half the
+     screen (which is the whole reason the user clicked in). The modal body's
+     overflow-y: auto handles tall images by scrolling. */
+  height: auto;
   background: #1a1a26;
 }
 .post-modal-body .modal-text-content {

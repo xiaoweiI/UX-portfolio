@@ -4,6 +4,16 @@
 
 ## [Unreleased]
 
+### Added (Track 04 占位改成 Coming soon，自嘲式填满)
+- Rhapsody 那条 placeholder 改名 `Coming soon`（subtitle `TBA · Studio · 2026`、glyph `?`、duration `05:00`），保留原 pink-purple-cream 配色 + light theme（4 张唱片的视觉身份需要保持彼此对比）。
+- 写满了完整的 4 段 lyrics + posts + voices——但不是真案例，是**自嘲式 placeholder**：每首歌承认这是空槽位、解释为什么留个空 vs 假装完整、调侃 portfolio 永远 90% 完成不了。
+  - Lyric 1 *Still mixing in the studio.* — "what's the next track about? honest answer: 未定。"
+  - Lyric 2 *The art is real. The story isn't (yet).* — 解释为什么有渐变没项目（视觉责任 ≠ 叙事责任）。
+  - Lyric 3 *Portfolio sites are 90% finished forever.* — 三个真项目 + 一个 placeholder = 真实比例，胜过假装完整。
+  - Lyric 4 *Probably weird. Definitely on its way.* — 统计学上 designer 总是用三个月前的执念填占位槽。
+- 4 段 voices 也是俏皮假评论："Came for the case study, stayed for the suspense." / "I'd rate this 5 stars but I'd be judging the gradient." / "I rated this 5 stars without reading. The vibes were enough." 等。
+- 这样切到 Track 04 时面板不会是空的，而是一个有 tone 的 placeholder——比 "Drop a new project here" 那种纯技术提示符合作品集本身的 voice。
+
 ### Changed (Disc cover 不再透色 + Carbcycle icon 放大)
 - 之前 disc 的 background 是 `url(cover), gradient` 双层 stack——cover PNG 透明的地方会漏出 accent 渐变。换 app icon 后这个漏色比 full-bleed 截图明显得多（icon PNG 的四角 + dark-circle 外圈都是透明的）。
 - `buildDiscStack` 改成：有 cover 时只用 `url(cover) ${size} no-repeat var(--bg-deep)`——单层图 + 主题底色 fallback（`#0c0b0a` dark / `#f4f5fb` light），透明区跟页面底色平齐而不是冒色。
@@ -14,6 +24,43 @@
 - `cover: "Carbcycle/carb1.jpg"`（产品截图，矩形纵向）→ `cover: "Carbcycle/appimage.png"`（万圣节火焰南瓜 app 图标，圆形构图）。
 - 截图当圆形 disc 封面会被裁掉两侧，app icon 是为圆形而设计的，紫色 PhaseMind disc 用 `AppImage.png` 已经验证视觉好得多——Carbcycle 跟上同一规则。
 - `carb1.jpg` 仍然在 lyric 1 的 `posts` 里以 image post 形式露出（"Today screen — three macro rings"），没浪费。
+
+### Changed (所有 image post 升级为双图并排)
+- 配合上一条能力（`src` 支持数组），所有 3 个真项目里的 image post 都从单图改成双图，每对图在 narrative 上有讲故事关系（不是堆图）。caption 也跟着重写说明两张图为什么放在一起。
+- **Carbcycle**（3 个 image post，用 carb1-6 共 6 张图全填进去，carb7 Settings 暂不用）：
+  - Lyric 1 *The hook*：`carb1`（Today macro rings）+ `carb4`（Meals 页 H/M/L 切换栏）—— 把"day mode 是第一决策"在两处呈现。
+  - Lyric 2 *One tap, three numbers*：`carb2`（Auto Meal Plan 动效）+ `carb5`（Profile 里的 Cycling Config 显示 ×1.1 / ×0.9 系数）——动画的"前台" + 驱动它的"后台数学"。
+  - Lyric 3 *Seven days, generated*：`carb3`（Preview Plan）+ `carb6`（Foods 库）——commit 前的预览 + 它从哪里抽食物。
+- **Ecodemand**（3 个 image post，用 dashboard-1/2/3/4/5/6 全 6 张）：
+  - Lyric 1 *Numbers should whisper*：`dashboard-1` + `dashboard-2`——两套 metric overview，都按 delta 而不是绝对值组织。
+  - Lyric 2 *Scan the sales line first*：`dashboard-3`（revenue silhouette）+ `dashboard-6`（inbox thread detail）——同一条 UX 规则两处表达："默认看形状，需要才看细节"。
+  - Lyric 3 *One navigation grammar*：`dashboard-4`（Products）+ `dashboard-5`（Inbox）——不同内容、同一套行模式。
+- **PhaseMind**（4 个 image post，只有 4 张 phase-1..4，必须复用）：
+  - Lyric 1 *Two charts, same body*：`phase-1`（Today readout）+ `phase-3`（Records editor）——同一个 4 维 ADHD 模型，两个 surface。
+  - Lyric 2 *Color the background*：`phase-2` + `phase-4`——Trends 图把周期当背景；Profile insights 把周期当对比基线。同一个时间锚点的两种用法。
+  - Lyric 3 *Estrogen rising*：`phase-3` + `phase-1`（复用）——Records 是 phase 教育的主战场，但 Today 屏复刻同一个 phase 标签，保证术语全 app 一致。
+  - Lyric 4 *Streaks without shame*：`phase-4` + `phase-2`（复用）——Profile 把 streak 收成静态徽章，Trends 把长期模式可视化，两者一起完成"在场不催"。
+- 每个 lyric 2 张图复用一张本来其实有点尴尬，但 narrative 站得住——同一张图在不同的对比组合里讲不同的故事。要彻底干净配对，PhaseMind 需要再补几张截图（例如 Calendar 视图、AdHD pattern 详情卡等）。
+- 痛点：很多 case study 一句话需要配 2 张截图（before/after、list/detail 等）。原本一个 image post 只能放一张，要么挤进 caption 要么拆成两个相邻 post（拆完阅读节奏断了）。
+- 数据模型扩展：`post.src` 现在可以是字符串（单图，现行行为不变）或字符串数组（多图并排）。
+  ```js
+  // 单图（现行）
+  { type: "image", src: "Carbcycle/carb1.jpg", caption: "..." }
+  // 双图并排（新）
+  { type: "image", src: ["Carbcycle/carb1.jpg", "Carbcycle/carb4.jpg"], caption: "..." }
+  // 三图并排
+  { type: "image", src: [..., ..., ...], caption: "..." }
+  ```
+- 渲染逻辑：`renderPosts()` 和 `openPostModal()` 都用 `Array.isArray()` 判定，多图时套一个 `.post-image-row` grid 容器（`grid-template-columns: 1fr 1fr`，3 图时 `repeat(3, 1fr)`），单图保持原直接 `<img>` 标签。
+- 视觉：内嵌卡片走 `.post-image img` 的 `max-height: 360px + object-fit: cover` 规则（继承下来），保持卡片高度齐整；modal 走 `.post-modal-body img` 的 `width: 100%; height: auto` 规则，**多图也是各自完整宽高比**，并排显示，超出由 modal 滚动接住。共用 caption 一条，挂在底部（仍由 `.post-image-frame` 的 `position: relative` 锚定）。
+
+### Fixed (Post modal 里手机截图只显示一半)
+- 点 Liner Notes 里 image post 打开 modal 后，1008×2114 的手机截图只能看到下半段——`.post-modal-body img` 当时是 `max-height: 55vh` + `object-fit: cover`，强行把竖屏图塞进矮一截的横向矩形，中间被裁掉。
+- 改成 `width: 100%; height: auto`，去掉 `max-height` 和 `object-fit`。图按自然宽高比铺满 modal 宽度，超出的部分由 `.post-modal-body` 的 `overflow-y: auto` 接住——和 Instagram / Twitter 看手机截图的体验一致：点开 = 看全图，画面太高就滚动。
+
+### Fixed (键盘关 intro 后胶片不转)
+- `dismissIntro({ play = false })` 默认不播放——CTA 点击会传 `play: true` 自动起播，但**键盘关 intro** 的路径（`window.keydown` listener）调的是 `dismissIntro()` 不带参数，于是 intro 走了、`is-playing` 没开、胶片就一直静止。
+- 修复：默认值翻成 `play = true`，键盘 listener 也显式传 `play: true`。任何关 intro 的方式（CTA / 键盘 / 后续可能加的更多触发器）都会让胶片直接转起来。要暂停的话用播放按钮——而不是用"intro 关闭方式"这种隐藏分支控制。
 
 ### Fixed (唱针被唱片盖住)
 - `.tonearm` 是 `z-index: 3`、`.disc[data-state="active"]` 是 `z-index: 5`，且两者是 `.turntable` 的兄弟，所以 active disc 永远盖住针。tonearm 提到 `z-index: 6`，针现在压在唱片上方读起来才对。

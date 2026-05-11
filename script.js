@@ -16,7 +16,7 @@ const works = [
     glyph: "C",
     coverTag: "Track 01",
     cover: "Carbcycle/appimage.png",
-    coverSize: "120%", // enlarge the pumpkin icon — its built-in padding leaves the disc looking small at default "cover"
+    coverSize: "132%", // enlarge the pumpkin icon — its built-in padding leaves the disc looking small at default "cover"
     // Dark theme — warm-orange-on-near-black, like the Waveplay reference.
     theme: "dark",
     accent1: "#ff6e1f",
@@ -35,8 +35,8 @@ const works = [
           },
           {
             type: "image",
-            src: "Carbcycle/carb1.jpg",
-            caption: "Today screen — three macro rings as the daily anchor.",
+            src: ["Carbcycle/carb1.jpg", "Carbcycle/carb4.jpg"],
+            caption: "Today (macro rings as the daily anchor) + Meals (H/M/L mode pills at the top — the first decision of the day, surfaced from every page).",
           },
         ],
         voices: [
@@ -58,8 +58,8 @@ const works = [
           },
           {
             type: "image",
-            src: "Carbcycle/carb2.jpg",
-            caption: "Auto Meal Plan modal — pattern over a 7-day week, color-coded by mode.",
+            src: ["Carbcycle/carb2.jpg", "Carbcycle/carb5.jpg"],
+            caption: "Auto Meal Plan modal + the Cycling Config behind the math — High Carb ×1.1 / Low Carb ×0.9 are the multipliers that recalculate in 320ms.",
           },
         ],
         voices: [
@@ -82,8 +82,8 @@ const works = [
           },
           {
             type: "image",
-            src: "Carbcycle/carb3.jpg",
-            caption: "Preview Plan — totals visible per day before Confirm & Apply.",
+            src: ["Carbcycle/carb3.jpg", "Carbcycle/carb6.jpg"],
+            caption: "Preview Plan (totals before commit) + the Foods library it draws from. Users see both the macro math and the food breadth before signing.",
           },
         ],
         voices: [
@@ -143,8 +143,8 @@ const works = [
           },
           {
             type: "image",
-            src: "Ecodemand/dashboard-1.png",
-            caption: "Top metrics card — absolute number paired with delta-vs-yesterday as a colored note.",
+            src: ["Ecodemand/dashboard-1.png", "Ecodemand/dashboard-2.png"],
+            caption: "Two metric-overview surfaces — both lead with delta and shape, not absolute totals. The dashboard rebuild's spine.",
           },
         ],
         voices: [
@@ -162,8 +162,8 @@ const works = [
         posts: [
           {
             type: "image",
-            src: "Ecodemand/dashboard-3.png",
-            caption: "Revenue view — soft area chart so the eye lands on shape, not exact ticks.",
+            src: ["Ecodemand/dashboard-3.png", "Ecodemand/dashboard-6.png"],
+            caption: "Revenue silhouette + Inbox thread detail — same UX rule expressed twice: default to shape, reveal specifics only on demand.",
           },
           {
             type: "text",
@@ -185,8 +185,8 @@ const works = [
         posts: [
           {
             type: "image",
-            src: "Ecodemand/dashboard-4.png",
-            caption: "Product browse — same row pattern, controls, and density as orders/customers.",
+            src: ["Ecodemand/dashboard-4.png", "Ecodemand/dashboard-5.png"],
+            caption: "Products + Inbox — different content, identical row grammar. The reason new operators onboard in minutes: every page reuses what they already learned.",
           },
         ],
         voices: [
@@ -231,8 +231,8 @@ const works = [
           },
           {
             type: "image",
-            src: "PhaseMind/phase-1.jpg",
-            caption: "Today — phase + cycle day on top, 4-axis ADHD state directly below.",
+            src: ["PhaseMind/phase-1.jpg", "PhaseMind/phase-3.jpg"],
+            caption: "Today (readout) + Records (editor) — same 4-axis ADHD model, two surfaces. Home shows the live state; Records is where the day's scores get logged.",
           },
         ],
         voices: [
@@ -250,8 +250,8 @@ const works = [
         posts: [
           {
             type: "image",
-            src: "PhaseMind/phase-2.jpg",
-            caption: "Trends — Focus line drawn over phase-tinted background bands; one read for two dimensions.",
+            src: ["PhaseMind/phase-2.jpg", "PhaseMind/phase-4.jpg"],
+            caption: "Trends chart + Profile insights — both use the cycle as the temporal frame: focus line over phase-banded background, insights as delta vs prior cycle.",
           },
           {
             type: "text",
@@ -278,8 +278,8 @@ const works = [
           },
           {
             type: "image",
-            src: "PhaseMind/phase-3.jpg",
-            caption: "Records — phase explanation + Learn more, then logging fields below the explanation.",
+            src: ["PhaseMind/phase-3.jpg", "PhaseMind/phase-1.jpg"],
+            caption: "Records leads with the phase explanation, then logging fields below; Today's screen carries the same phase label so the vocabulary is consistent everywhere it appears.",
           },
         ],
         voices: [
@@ -297,8 +297,8 @@ const works = [
         posts: [
           {
             type: "image",
-            src: "PhaseMind/phase-4.jpg",
-            caption: "Profile — streak as a quiet badge, insights as deltas vs prior cycle, goals framed in self-knowledge.",
+            src: ["PhaseMind/phase-4.jpg", "PhaseMind/phase-2.jpg"],
+            caption: "Profile (streak as quiet badge, never pushed) + Trends (the long-term pattern view) — long-term presence without nagging.",
           },
           {
             type: "text",
@@ -315,19 +315,104 @@ const works = [
       },
     ],
   },
+  // Track 04 — the deliberately empty slot. A 4-track album with one
+  // unrecorded song. Content is intentionally playful: better to admit the
+  // placeholder than to dress it up with lorem ipsum.
   {
-    title: "Rhapsody",
-    subtitle: "Coming soon",
+    title: "Coming soon",
+    subtitle: "TBA · Studio · 2026",
     description:
-      "Placeholder. Drop a new project folder into the repo and update this entry: title, subtitle, description, tags, glyph, cover, and the three accent colors.",
-    tags: ["Placeholder"],
-    duration: "05:21",
-    glyph: "R",
+      "An empty slot waiting for the next thing. The portfolio is a 4-track album and this is the unrecorded song — the gradient is the placeholder, the case study is in the calendar. Re-check in a few weeks; there will be a project here, and I'll claim it was the plan all along.",
+    tags: ["TBA", "In progress", "Probably weird"],
+    duration: "05:00",
+    glyph: "?",
     coverTag: "Track 04",
     theme: "light",
     accent1: "#c471f5",
     accent2: "#fa71cd",
     accent3: "#fbc2eb",
+    lyrics: [
+      {
+        line: "Still mixing in the studio.",
+        question: "What's the next track about?",
+        note: "Honest answer: undecided. The brief is somewhere between 'thing I'm curious about' and 'thing someone is paying me to think about'. Whatever lands here will get the same treatment as the other three tracks — four lyrics, a designer's note, user voices, and a real story for why the product is the way it is. Until then, this slot is the part of the portfolio that's allowed to keep moving.",
+        posts: [
+          {
+            type: "text",
+            title: "In the meantime",
+            body: "If you skipped to Track 04 hoping for something specific — sorry, not yet. If you skipped here hoping to find the part of the portfolio where the designer admits not everything is figured out, congratulations: you found it.",
+          },
+        ],
+        voices: [
+          {
+            quote: "Came for the case study, stayed for the suspense.",
+            author: "A patient visitor",
+            tag: "First impression",
+          },
+        ],
+      },
+      {
+        line: "The art is real. The story isn't (yet).",
+        question: "Why is there a gradient if there's no project?",
+        note: "The pink-purple-cream palette is decorative. Four discs spinning in a row needed four distinct color identities, and this one rounded out the set. Whatever fills Track 04 will bring its own color story; this gradient retires gracefully — or gets revived as a B-side, depending on how the next case study goes.",
+        posts: [
+          {
+            type: "text",
+            body: "The disc needs to look like a disc even when the work doesn't exist yet. The gradient is doing visual duty, not narrative duty.",
+          },
+        ],
+        voices: [
+          {
+            quote: "I'd rate this 5 stars but I'd be judging the gradient, not the work.",
+            author: "Honest reviewer",
+            tag: "Decorative",
+          },
+        ],
+      },
+      {
+        line: "Portfolio sites are 90% finished forever.",
+        question: "Why ship the portfolio with a placeholder at all?",
+        note: "Two reasons. One: the four-track layout is the design — a portfolio that pretends to be complete is more brittle than one that admits it isn't. Two: the alternative is keeping the site offline until a fourth project lands, which is the well-trodden path to never shipping a portfolio at all.",
+        posts: [
+          {
+            type: "text",
+            title: "The honest count",
+            body: "Three real projects, one placeholder. That's a real ratio for a real designer, not the curated greatest-hits version most portfolios pretend to be.",
+          },
+        ],
+        voices: [
+          {
+            quote: "Refreshing to see an empty slot instead of one stuffed with lorem ipsum.",
+            author: "A hiring manager, maybe",
+            tag: "Honesty",
+          },
+        ],
+      },
+      {
+        line: "Probably weird. Definitely on its way.",
+        question: "What will end up here?",
+        note: "Statistically, designers fill placeholder slots with whatever they were obsessed with three months earlier — so check back then. Until then, this disc keeps spinning, the page keeps loading, the next thing keeps cooking.",
+        posts: [
+          {
+            type: "text",
+            title: "The most likely outcome",
+            body: "Some small weird thing that solves a specific problem nobody else thought was worth solving. That's been the pattern. No reason to break it for Track 04.",
+          },
+        ],
+        voices: [
+          {
+            quote: "This is the part of the portfolio where you make eye contact and smile awkwardly.",
+            author: "Anonymous beta tester",
+            tag: "Mood",
+          },
+          {
+            quote: "I rated this 5 stars without reading. The vibes were enough.",
+            author: "Easily impressed",
+            tag: "Pure vibes",
+          },
+        ],
+      },
+    ],
   },
 ];
 
@@ -555,10 +640,22 @@ function renderPosts() {
         const cap = p.caption
           ? `<p class="post-caption">${escapeHtml(p.caption)}</p>`
           : "";
+        // src can be a string (single image, current behaviour) or an array
+        // of strings (multiple images rendered side-by-side in a grid).
+        const srcs = Array.isArray(p.src) ? p.src : [p.src];
+        const imgs = srcs
+          .map(
+            (s) =>
+              `<img src="${escapeAttr(s)}" alt="${escapeAttr(p.caption || "")}" loading="lazy">`
+          )
+          .join("");
+        const inner = srcs.length > 1
+          ? `<div class="post-image-row" data-count="${srcs.length}">${imgs}</div>`
+          : imgs;
         return `
           <article class="post post-image" data-action="open" data-post-id="${id}">
             <div class="post-image-frame">
-              <img src="${escapeAttr(p.src)}" alt="${escapeAttr(p.caption || "")}" loading="lazy">
+              ${inner}
               ${cap}
             </div>
             ${footer}
@@ -659,8 +756,18 @@ function openPostModal(id) {
 
   // Render content
   if (post.type === "image") {
+    const srcs = Array.isArray(post.src) ? post.src : [post.src];
+    const imgs = srcs
+      .map(
+        (s) =>
+          `<img src="${escapeAttr(s)}" alt="${escapeAttr(post.caption || "")}">`
+      )
+      .join("");
+    const inner = srcs.length > 1
+      ? `<div class="post-image-row" data-count="${srcs.length}">${imgs}</div>`
+      : imgs;
     postModalBody.innerHTML = `
-      <img src="${escapeAttr(post.src)}" alt="${escapeAttr(post.caption || "")}">
+      ${inner}
       ${post.caption ? `<div class="modal-text-content"><p>${escapeHtml(post.caption)}</p></div>` : ""}
     `;
   } else {
@@ -1039,7 +1146,11 @@ function bindControls() {
 // --------------------------------------------------------------------------
 // Intro / welcome overlay
 // --------------------------------------------------------------------------
-function dismissIntro({ play = false } = {}) {
+// Default to play=true so the disc starts spinning no matter how the user
+// dismisses the intro (CTA, keyboard, anything else added later). The "paused
+// disc" state is reachable from the play button after dismiss — there's no
+// product reason for a paused intro-exit.
+function dismissIntro({ play = true } = {}) {
   if (introDismissed) return;
   introDismissed = true;
   intro.classList.add("intro--exit");
@@ -1052,7 +1163,7 @@ function bindIntro() {
   // Bubble-phase listener on window — fires AFTER document handlers,
   // so the main keydown's `if (!introDismissed) return` short-circuits cleanly.
   window.addEventListener("keydown", () => {
-    if (!introDismissed) dismissIntro();
+    if (!introDismissed) dismissIntro({ play: true });
   });
 }
 
