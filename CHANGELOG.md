@@ -4,6 +4,40 @@
 
 ## [Unreleased]
 
+### Changed (Disc cover 不再透色 + Carbcycle icon 放大)
+- 之前 disc 的 background 是 `url(cover), gradient` 双层 stack——cover PNG 透明的地方会漏出 accent 渐变。换 app icon 后这个漏色比 full-bleed 截图明显得多（icon PNG 的四角 + dark-circle 外圈都是透明的）。
+- `buildDiscStack` 改成：有 cover 时只用 `url(cover) ${size} no-repeat var(--bg-deep)`——单层图 + 主题底色 fallback（`#0c0b0a` dark / `#f4f5fb` light），透明区跟页面底色平齐而不是冒色。
+- 新增 per-work 的 `coverSize` 字段（可选）：默认 `"cover"`，但 icon 类 PNG 因为内置 padding 在 disc 上看起来偏小。Carbcycle 加 `coverSize: "120%"`，把南瓜 icon 放大 20%——它的暗棕圆把 disc 填满，剩余透明区直接被 disc 的 `border-radius: 50%` 裁掉。
+- PhaseMind 仍是 `"cover"` 默认值（图标本身已经填得满 disc）；Ecodemand 也是 `"cover"`（dashboard-1.png 是 full-bleed 截图无透明）。
+
+### Changed (Carbcycle disc 封面换成 app icon)
+- `cover: "Carbcycle/carb1.jpg"`（产品截图，矩形纵向）→ `cover: "Carbcycle/appimage.png"`（万圣节火焰南瓜 app 图标，圆形构图）。
+- 截图当圆形 disc 封面会被裁掉两侧，app icon 是为圆形而设计的，紫色 PhaseMind disc 用 `AppImage.png` 已经验证视觉好得多——Carbcycle 跟上同一规则。
+- `carb1.jpg` 仍然在 lyric 1 的 `posts` 里以 image post 形式露出（"Today screen — three macro rings"），没浪费。
+
+### Fixed (唱针被唱片盖住)
+- `.tonearm` 是 `z-index: 3`、`.disc[data-state="active"]` 是 `z-index: 5`，且两者是 `.turntable` 的兄弟，所以 active disc 永远盖住针。tonearm 提到 `z-index: 6`，针现在压在唱片上方读起来才对。
+
+### Fixed (唱针的 arm 和 head 之间有 ~58px 缝)
+- `.tonearm-arm` 和 `.tonearm-head` 在 HTML 里是**兄弟节点**，分别定到 `.tonearm` 容器的不同 corner（arm: top/right + rotate 28°，head: bottom/left + rotate -32°），它们的"接缝"靠几何巧合而非父子关系。换 PhaseMind 后 disc 边缘留白多，缝就暴露了——之前 Carbcycle/Ecodemand 的满版深色封面把缝藏在 disc 上没人看到。
+- HTML 把 head 嵌进 arm（`.tonearm-arm > .tonearm-head`），head 改成 `position: absolute; bottom: -8px; left: 50%` + `translateX(-58%) rotate(-32deg)` —— 不管 arm 怎么转，head 永远物理粘在 arm 的末端，像真实唱针的 cartridge 挂在 arm 头那样。
+
+### Added (Track 03 完整接入：PhaseMind — ADHD 女性周期+状态追踪 app)
+- 占位作品 Pulse 彻底换成 **PhaseMind**：title / glyph "P" / cover / 4 段 lyrics + 8 个 posts + 4 段 user voice 全部填真实内容。
+- **产品命题（写进 description）**：雌激素随周期上下波动 → 拖动多巴胺 → ADHD 症状跟着动。经期 app 不管 ADHD，ADHD app 不管周期，PhaseMind 把两者放进一个 surface，让用户看到 pattern 而不是去猜。
+- **4 段 lyrics 各对应一张产品截图，叙事按"4 个产品决策"组织**：
+  1. *Two charts, same body.* — Today 屏：phase 环 + 4 维 ADHD 状态同屏。回答"为什么把两个领域合并"。
+  2. *Color the background, not the line.* — Trends 屏：周期阶段当背景色带、ADHD 折线当前景。回答"如何让相关性一眼可见"，不需要切图表。
+  3. *Estrogen rising, in plain language.* — Records 屏：每天的 phase 名 + "意味着什么" 解释 + Learn more，把激素科普嵌进 logging flow，而不是单独的"科普 tab"（那种 tab 永远 dead）。
+  4. *Streaks without the shame.* — Profile 屏：streak 徽章降级到 Profile（不在 Home 推给用户），没有 missed-day 惩罚，goals 从 "% complete" 改成 "你这个月对自己的认识"。tone over count，明确避开 ADHD 群体已经经历过太多的 punitive UX。
+- **配色取自用户提供的 Wavelet-style 浅色参考图**：紫色为主、暖粉为点缀。
+  - `accent1: #7c6dff`（深薰衣草紫——播放按钮 / 主 CTA）
+  - `accent2: #a78bfa`（浅紫——渐变中段 / halo）
+  - `accent3: #ff5e8a`（暖粉——心形 / active lyric / "data 点缀"位）
+- `theme: "light"`：复用上一轮加的 per-track 明暗主题机制，PhaseMind 切到时整站翻成浅紫白瓷玻璃。
+- **文件命名整理**：4 张产品截图原本是微信下载的中文长名（`微信图片_2026...jpg`），renamed → `PhaseMind/phase-1.jpg`...`phase-4.jpg`。中文路径在 GitHub Pages / 部分静态服务器上要 URL-encode 才能拿到，ASCII 名最稳。
+- `cover: "PhaseMind/AppImage.png"`：唱盘封面换成用户提供的 app icon（脑+人物剪影 + 紫粉轨道环），紫粉色调跟 disc-stack 边缘渐变完美咬合，比用产品截图当封面更"品牌化"——其他 track 的截图改去 lyric posts 里。
+
 ### Added (Per-track 明暗主题：每个项目独立色调)
 - 用户决定让每个作品有完全不同的视觉身份——不只是 accent 色不同，而是连**底色明暗**都不同。Carbcycle 维持"近黑 + 暖橙"（参考 Waveplay），Ecodemand 走"亮白 + 蓝紫 + 暖橙点缀"（参考 Waveflow），未来作品可以自由选 dark / light。
 - **`works[i].theme: "dark" | "light"`** 数据字段：每个 work 声明自己的明暗主题。Carbcycle/Pulse → dark；Ecodemand/Rhapsody → light（默认 dark 兜底）。

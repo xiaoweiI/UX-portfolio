@@ -15,7 +15,8 @@ const works = [
     duration: "04:24",
     glyph: "C",
     coverTag: "Track 01",
-    cover: "Carbcycle/carb1.jpg",
+    cover: "Carbcycle/appimage.png",
+    coverSize: "120%", // enlarge the pumpkin icon — its built-in padding leaves the disc looking small at default "cover"
     // Dark theme — warm-orange-on-near-black, like the Waveplay reference.
     theme: "dark",
     accent1: "#ff6e1f",
@@ -198,20 +199,121 @@ const works = [
       },
     ],
   },
-  // ↓ Placeholders — replace when you add a new project
+  // ↓ PhaseMind — cycle-phase + ADHD-state tracker for women with ADHD.
+  // The premise: hormonal phases shift dopamine, which shifts ADHD symptoms.
+  // Both spaces have apps; almost none connect the two on one surface.
+  // Visual identity from a Wavelet-style light reference: soft purple primary
+  // + warm pink as the data-punctuation accent.
   {
-    title: "Pulse",
-    subtitle: "Coming soon",
+    title: "PhaseMind",
+    subtitle: "Mobile App · iOS · 2026",
     description:
-      "Placeholder. Drop a new project folder into the repo and update this entry: title, subtitle, description, tags, glyph, cover, and the three accent colors.",
-    tags: ["Placeholder"],
-    duration: "02:56",
+      "A cycle and ADHD-state tracker built for women with ADHD. Estrogen rises and falls across the menstrual cycle and drags dopamine — and ADHD symptoms — with it. Most period apps ignore that link; most ADHD apps ignore the cycle. PhaseMind puts both on one surface so users can see the pattern instead of guessing at it.",
+    tags: ["iOS", "Health", "ADHD", "Women", "Mobile"],
+    duration: "03:30",
     glyph: "P",
     coverTag: "Track 03",
-    theme: "dark",
-    accent1: "#11998e",
-    accent2: "#38ef7d",
-    accent3: "#a8e063",
+    cover: "PhaseMind/AppImage.png",
+    theme: "light",
+    accent1: "#7c6dff", // deep lavender — play button, primary CTA
+    accent2: "#a78bfa", // lighter purple — gradient mid + halo
+    accent3: "#ff5e8a", // warm pink — heart, active lyric, "data" punctuation
+    lyrics: [
+      {
+        line: "Two charts, same body.",
+        question: "Why fold cycle tracking and ADHD tracking into one app.",
+        note: "Period apps know cycle phases. ADHD apps know focus and mood scores. Neither knows about the other — but estrogen rising and falling across the cycle drags dopamine with it, and ADHD symptoms move with that. Users with both diagnoses were already taping two apps together with notes. PhaseMind makes the connection the surface, not the user's homework.",
+        posts: [
+          {
+            type: "text",
+            title: "The hook",
+            body: "Period and ADHD live in two separate app stores. Users with both were maintaining a period app, an ADHD app, and a notes file to cross-reference them. PhaseMind merges the surfaces — a phase ring + cycle day on top, a 4-axis ADHD readout (Focus / Impulse / Hyperactivity / Mood) right below, both above the fold on Home.",
+          },
+          {
+            type: "image",
+            src: "PhaseMind/phase-1.jpg",
+            caption: "Today — phase + cycle day on top, 4-axis ADHD state directly below.",
+          },
+        ],
+        voices: [
+          {
+            quote: "I had Flo on one screen and a focus rating app on another. I'd screenshot both and look at them side by side. PhaseMind already does that for me.",
+            author: "P02 — ADHD + endometriosis",
+            tag: "Cross-app workflow",
+          },
+        ],
+      },
+      {
+        line: "Color the background, not the line.",
+        question: "How to make cycle/ADHD correlation visible without forcing a chart toggle.",
+        note: "An ADHD trend line by itself reads as random noise. Overlaying a second chart for cycle phases doubles the cognitive load. Painting the cycle phases as soft colored background bands behind the line lets the eye read both at once — no toggle, no math. In testing, users named the pattern in <5s with bands vs ~30s with stacked charts. The dimension switch (Focus / Hyperactivity / Impulsivity / Mood) reuses the same band colors so the cycle never has to be re-decoded between tabs.",
+        posts: [
+          {
+            type: "image",
+            src: "PhaseMind/phase-2.jpg",
+            caption: "Trends — Focus line drawn over phase-tinted background bands; one read for two dimensions.",
+          },
+          {
+            type: "text",
+            body: "Same dataset, two readings. Phase as background, score as foreground. The Correlation tab makes the implicit thesis explicit, but the colored bands are doing most of the work — by the time a user reaches Correlation, they've already named the pattern themselves.",
+          },
+        ],
+        voices: [
+          {
+            quote: "I see now why my focus drops the same week every month. I thought I was just inconsistent.",
+            author: "P05 — Late-diagnosed ADHD",
+            tag: "Pattern recognition",
+          },
+        ],
+      },
+      {
+        line: "Estrogen rising, in plain language.",
+        question: "Why bake hormone literacy into the logging flow itself.",
+        note: "Most users don't know what 'follicular phase' means biologically. A separate education tab is the wrong answer — those tabs always die. The Records page leads with the day's meaning ('Follicular phase · Estrogen rising — energy and focus rise, a good window for new things') and reduces the raw data fields to a secondary action below. Logging becomes a teaching moment without a syllabus.",
+        posts: [
+          {
+            type: "text",
+            title: "The frame",
+            body: "Records leads with what the day means for the body, not what to fill in. The data fields — flow, color, symptoms, the 4-axis ADHD sliders — sit underneath the explanation, not above it. Users learn the cycle by logging it.",
+          },
+          {
+            type: "image",
+            src: "PhaseMind/phase-3.jpg",
+            caption: "Records — phase explanation + Learn more, then logging fields below the explanation.",
+          },
+        ],
+        voices: [
+          {
+            quote: "I'm 32 and this is the first time someone explained estrogen and dopamine to me in a sentence I could understand.",
+            author: "P07 — Diagnosed at 30",
+            tag: "Health literacy",
+          },
+        ],
+      },
+      {
+        line: "Streaks without the shame.",
+        question: "How to encourage daily logging in a population that's been pathologized for inconsistency.",
+        note: "ADHD users have a lifetime of broken-streak guilt. The 'don't break your streak!' UX pattern retraumatizes the exact thing they're trying to manage. PhaseMind keeps the streak quiet — a small badge in Profile, never pushed on Home — with no penalty for missed days. Goals are reframed from '% complete' to 'what you've learned about yourself this month'. The supportive opening line ('Knowing yourself is where change starts 💜') is load-bearing — it sets the contract that this app is here to help, not to grade.",
+        posts: [
+          {
+            type: "image",
+            src: "PhaseMind/phase-4.jpg",
+            caption: "Profile — streak as a quiet badge, insights as deltas vs prior cycle, goals framed in self-knowledge.",
+          },
+          {
+            type: "text",
+            body: "Default copy avoids punitive logic. Insights show delta vs prior cycle (not absolutes), so 'Mood stability ↑28%' replaces a bare score. The tools tile (Tags, Notes, Reminders, Privacy, Backup, Export, Appearance, Help) puts control in arm's reach — ADHD users abandon apps when they can't quickly find the off-switch.",
+          },
+        ],
+        voices: [
+          {
+            quote: "Most apps make me feel guilty when I miss a day. This one just… waits. It feels like an app that has actually met an ADHD person.",
+            author: "P03 — Beta tester",
+            tag: "Tone",
+          },
+        ],
+      },
+    ],
   },
   {
     title: "Rhapsody",
@@ -297,10 +399,13 @@ function buildDiscStack() {
     disc.dataset.index = String(i);
 
     const gradient = `linear-gradient(135deg, ${work.accent1}, ${work.accent2} 55%, ${work.accent3})`;
-    // Image (when present) sits on top of the gradient — gradient acts as fallback
-    // and as a tint behind transparent areas.
+    // Cover present → image only, with the page-deep color as a neutral fill so
+    // transparent areas of icon-style PNGs don't bleed colored gradient. Each
+    // work can override the size via `coverSize` (e.g. "120%" to enlarge an
+    // icon with built-in padding); defaults to "cover" for full-bleed images.
+    const size = work.coverSize || "cover";
     const bg = work.cover
-      ? `url('${work.cover}') center/cover no-repeat, ${gradient}`
+      ? `url('${work.cover}') center/${size} no-repeat var(--bg-deep)`
       : gradient;
 
     disc.innerHTML = `
